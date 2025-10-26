@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>🏚️ CANDYNA'S HAUNTED HOUSE 🏚️</title>
+    <style>
+        body {
+            margin: 0;
+            background: radial-gradient(circle at 50% 50%, #8A2BE2 0%, #6A0DAD 25%, #4B0082 50%, #2E0054 75%, #1A0033 100%);
+            background-size: 400% 400%;
+            animation: purpleGlow 6s ease-in-out infinite alternate;
+            box-shadow: inset 0 0 200px rgba(138, 43, 226, 0.6);
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        @keyframes purpleGlow {
+            0% {
+                background: radial-gradient(circle at 30% 40%, #8A2BE2 0%, #6A0DAD 25%, #4B0082 50%, #2E0054 75%, #1A0033 100%);
+                box-shadow: inset 0 0 200px rgba(138, 43, 226, 0.8), 0 0 100px rgba(138, 43, 226, 0.4);
+            }
+            50% {
+                background: radial-gradient(circle at 70% 60%, #9932CC 0%, #8A2BE2 25%, #6A0DAD 50%, #4B0082 75%, #2E0054 100%);
+                box-shadow: inset 0 0 300px rgba(153, 50, 204, 0.9), 0 0 150px rgba(153, 50, 204, 0.5);
+            }
+            100% {
+                background: radial-gradient(circle at 50% 20%, #BA55D3 0%, #9932CC 25%, #8A2BE2 50%, #6A0DAD 75%, #4B0082 100%);
+                box-shadow: inset 0 0 250px rgba(186, 85, 211, 1.0), 0 0 120px rgba(186, 85, 211, 0.6);
+            }
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #gameCanvas {
+            border: 3px solid #ff0066;
+            background: #333;
+            box-shadow: 0 0 50px #8A2BE2;
+        }
+
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 18px;
+            z-index: 100;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff0066;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 0 20px rgba(255, 0, 102, 0.5);
+            z-index: 100;
+        }
+
+        .back-button:hover {
+            background: #cc0052;
+            transform: scale(1.05);
+        }
+
+        #instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            text-align: center;
+            z-index: 100;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        #jumpScare {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: red;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: flashRed 0.1s infinite;
+        }
+
+        @keyframes flashRed {
+            0% { background: #ff0000; }
+            50% { background: #990000; }
+            100% { background: #ff0000; }
+        }
+
+        .jumpscare-text {
+            color: white;
+            font-size: 4rem;
+            font-weight: bold;
+            text-shadow: 0 0 30px #ff0066;
+            animation: shake 0.1s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(0); }
+            25% { transform: translate(-10px, 10px); }
+            50% { transform: translate(10px, -10px); }
+            75% { transform: translate(-10px, -10px); }
+            100% { transform: translate(10px, 10px); }
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="ui">
+            <div>🔑 Keys: <span id="keyCount">0</span>/10</div>
+            <div>👻 Avoid Candyna!</div>
+        </div>
+
+        <button class="back-button" onclick="backToMenu()">← Back to Menu</button>
+
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+        <div id="instructions">
+            <p>WASD to move • Find 10 Keys • Avoid Candyna • Escape!</p>
+        </div>
+
+        <div id="jumpScare">
+            <div class="jumpscare-text">👅 CANDYNA LICKED YOU! 👅</div>
+        </div>
+    </div>
+
+    <script>
+        // Simple 2.5D pseudo-3D game (no external libraries needed!)
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Game variables
+        let player = { x: 100, y: 100, angle: 0, size: 20 };
+        let candyna = { x: 400, y: 300, size: 30, angle: 0 };
+        let keys = [];
+        let keysCollected = 0;
+        let gameRunning = true;
+        let jumpScareActive = false;
+        let jumpScareTime = 0;
+
+        // House walls (simple 2D representation)
+        const walls = [
+            // Outer walls
+            {x1: 50, y1: 50, x2: 750, y2: 50},   // Top
+            {x1: 50, y1: 50, x2: 50, y2: 550},   // Left
+            {x1: 750, y1: 50, x2: 750, y2: 550}, // Right
+            {x1: 50, y1: 550, x2: 700, y2: 550}, // Bottom (with exit gap)
+
+            // Interior walls
+            {x1: 200, y1: 50, x2: 200, y2: 300},
+            {x1: 400, y1: 100, x2: 400, y2: 400},
+            {x1: 550, y1: 200, x2: 550, y2: 550},
+            {x1: 100, y1: 350, x2: 350, y2: 350},
+        ];
+
+        // Exit door
+        const exit = {x: 700, y: 525, width: 50, height: 25, unlocked: false};
+
+        // Input handling
+        const keys_pressed = {};
+        document.addEventListener('keydown', (e) => keys_pressed[e.code] = true);
+        document.addEventListener('keyup', (e) => keys_pressed[e.code] = false);
+
+        function init3DGame() {
+            createKeys();
+            startSpookyMusic();
+            gameLoop();
+        }
+
+        function createKeys() {
+            // Create 10 keys scattered around the house
+            const keyPositions = [
+                {x: 150, y: 150}, {x: 300, y: 200}, {x: 500, y: 150},
+                {x: 650, y: 200}, {x: 120, y: 400}, {x: 250, y: 450},
+                {x: 450, y: 350}, {x: 600, y: 400}, {x: 350, y: 100},
+                {x: 550, y: 300}
+            ];
+
+            keyPositions.forEach((pos, i) => {
+                keys.push({
+                    x: pos.x,
+                    y: pos.y,
+                    size: 15,
+                    collected: false,
+                    angle: i * 0.5,
+                    glowPhase: i * 0.3
+                });
+            });
+        }
+
+        function updatePlayer() {
+            if (!gameRunning) return;
+
+            const speed = 3;
+            let newX = player.x;
+            let newY = player.y;
+
+            if (keys_pressed['KeyW']) newY -= speed;
+            if (keys_pressed['KeyS']) newY += speed;
+            if (keys_pressed['KeyA']) newX -= speed;
+            if (keys_pressed['KeyD']) newX += speed;
+
+            // Check wall collisions
+            if (!checkWallCollision(newX, player.y, player.size)) {
+                player.x = newX;
+            }
+            if (!checkWallCollision(player.x, newY, player.size)) {
+                player.y = newY;
+            }
+
+            // Keep player in bounds
+            player.x = Math.max(player.size, Math.min(800 - player.size, player.x));
+            player.y = Math.max(player.size, Math.min(600 - player.size, player.y));
+        }
+
+        function checkWallCollision(x, y, size) {
+            for (let wall of walls) {
+                if (lineCircleCollision(wall.x1, wall.y1, wall.x2, wall.y2, x, y, size)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function lineCircleCollision(x1, y1, x2, y2, cx, cy, r) {
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const length = Math.sqrt(dx * dx + dy * dy);
+            const dot = (((cx - x1) * dx) + ((cy - y1) * dy)) / (length * length);
+
+            const closestX = x1 + (dot * dx);
+            const closestY = y1 + (dot * dy);
+
+            const onSegment = dot >= 0 && dot <= 1;
+            if (!onSegment) {
+                const d1 = Math.sqrt((cx - x1) * (cx - x1) + (cy - y1) * (cy - y1));
+                const d2 = Math.sqrt((cx - x2) * (cx - x2) + (cy - y2) * (cy - y2));
+                return Math.min(d1, d2) < r;
+            }
+
+            const distance = Math.sqrt((cx - closestX) * (cx - closestX) + (cy - closestY) * (cy - closestY));
+            return distance < r;
+        }
+
+        function updateCandyna() {
+            if (!gameRunning || jumpScareActive) return;
+
+            // Candyna chases player
+            const dx = player.x - candyna.x;
+            const dy = player.y - candyna.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance > 0) {
+                const speed = 1.5;
+                const moveX = (dx / distance) * speed;
+                const moveY = (dy / distance) * speed;
+
+                let newX = candyna.x + moveX;
+                let newY = candyna.y + moveY;
+
+                // Simple wall avoidance for Candyna
+                if (!checkWallCollision(newX, candyna.y, candyna.size)) {
+                    candyna.x = newX;
+                }
+                if (!checkWallCollision(candyna.x, newY, candyna.size)) {
+                    candyna.y = newY;
+                }
+
+                candyna.angle = Math.atan2(dy, dx);
+            }
+
+            // Check collision with player
+            const playerDistance = Math.sqrt(
+                (player.x - candyna.x) * (player.x - candyna.x) +
+                (player.y - candyna.y) * (player.y - candyna.y)
+            );
+
+            if (playerDistance < player.size + candyna.size && !jumpScareActive) {
+                triggerJumpScare();
+            }
+        }
+
+        function checkKeyCollection() {
+            keys.forEach(key => {
+                if (!key.collected) {
+                    const distance = Math.sqrt(
+                        (player.x - key.x) * (player.x - key.x) +
+                        (player.y - key.y) * (player.y - key.y)
+                    );
+
+                    if (distance < player.size + key.size) {
+                        key.collected = true;
+                        keysCollected++;
+                        document.getElementById('keyCount').textContent = keysCollected;
+                        playKeySound();
+
+                        if (keysCollected >= 10) {
+                            exit.unlocked = true;
+                        }
+                    }
+                }
+            });
+
+            // Check exit
+            if (exit.unlocked) {
+                if (player.x > exit.x && player.x < exit.x + exit.width &&
+                    player.y > exit.y && player.y < exit.y + exit.height) {
+                    gameRunning = false;
+                    setTimeout(() => {
+                        alert('🎉 YOU ESCAPED THE HAUNTED HOUSE! YOU WIN!');
+                        backToMenu();
+                    }, 100);
+                }
+            }
+        }
+
+        function draw() {
+            // Clear canvas
+            ctx.fillStyle = '#222';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw pseudo-3D floor pattern
+            ctx.fillStyle = '#444';
+            for (let x = 0; x < canvas.width; x += 40) {
+                for (let y = 0; y < canvas.height; y += 40) {
+                    if ((Math.floor(x/40) + Math.floor(y/40)) % 2 === 0) {
+                        ctx.fillRect(x, y, 40, 40);
+                    }
+                }
+            }
+
+            // Draw walls with 3D effect
+            ctx.strokeStyle = '#8B4513';
+            ctx.lineWidth = 8;
+            walls.forEach(wall => {
+                ctx.beginPath();
+                ctx.moveTo(wall.x1, wall.y1);
+                ctx.lineTo(wall.x2, wall.y2);
+                ctx.stroke();
+
+                // Add 3D shadow effect
+                ctx.strokeStyle = '#654321';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(wall.x1 + 2, wall.y1 + 2);
+                ctx.lineTo(wall.x2 + 2, wall.y2 + 2);
+                ctx.stroke();
+                ctx.strokeStyle = '#8B4513';
+                ctx.lineWidth = 8;
+            });
+
+            // Draw exit door
+            if (exit.unlocked) {
+                ctx.fillStyle = '#00ff00';
+                ctx.shadowColor = '#00ff00';
+                ctx.shadowBlur = 20;
+            } else {
+                ctx.fillStyle = '#654321';
+                ctx.shadowBlur = 0;
+            }
+            ctx.fillRect(exit.x, exit.y, exit.width, exit.height);
+            ctx.shadowBlur = 0;
+
+            // Draw keys with 3D glow effect
+            keys.forEach(key => {
+                if (!key.collected) {
+                    key.angle += 0.1;
+                    key.glowPhase += 0.05;
+
+                    // Glow effect
+                    const glowSize = 20 + Math.sin(key.glowPhase) * 5;
+                    ctx.fillStyle = 'rgba(0, 102, 255, 0.3)';
+                    ctx.beginPath();
+                    ctx.arc(key.x, key.y, glowSize, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Key body
+                    ctx.fillStyle = '#0066ff';
+                    ctx.beginPath();
+                    ctx.arc(key.x, key.y, key.size, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Key highlight for 3D effect
+                    ctx.fillStyle = '#3399ff';
+                    ctx.beginPath();
+                    ctx.arc(key.x - 3, key.y - 3, key.size / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+
+            // Draw Candyna (3D pink monster)
+            ctx.save();
+            ctx.translate(candyna.x, candyna.y);
+
+            // Body shadow
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.beginPath();
+            ctx.arc(2, 2, candyna.size, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Body
+            ctx.fillStyle = '#ff69b4';
+            ctx.beginPath();
+            ctx.arc(0, 0, candyna.size, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Body highlight for 3D effect
+            ctx.fillStyle = '#ff91d4';
+            ctx.beginPath();
+            ctx.arc(-5, -5, candyna.size * 0.6, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Eyes
+            ctx.fillStyle = '#ff1493';
+            ctx.shadowColor = '#ff1493';
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.arc(-8, -5, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(8, -5, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Mouth
+            ctx.fillStyle = '#000';
+            ctx.fillRect(-6, 2, 12, 4);
+
+            // Animated tongue
+            const tongueLength = 15 + Math.sin(Date.now() * 0.01) * 5;
+            const tongueWobble = Math.sin(Date.now() * 0.015) * 3;
+            ctx.fillStyle = '#ff91a4';
+            ctx.fillRect(-2 + tongueWobble, 6, 4, tongueLength);
+
+            // Tongue tip
+            ctx.beginPath();
+            ctx.arc(tongueWobble, 6 + tongueLength, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+
+            // Draw player (green square with 3D effect)
+            ctx.save();
+            ctx.translate(player.x, player.y);
+
+            // Player shadow
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.fillRect(-player.size/2 + 2, -player.size/2 + 2, player.size, player.size);
+
+            // Player body
+            ctx.fillStyle = '#00ff00';
+            ctx.fillRect(-player.size/2, -player.size/2, player.size, player.size);
+
+            // Player highlight
+            ctx.fillStyle = '#66ff66';
+            ctx.fillRect(-player.size/2, -player.size/2, player.size/2, player.size/2);
+
+            ctx.restore();
+
+            // Draw UI counter
+            ctx.fillStyle = 'white';
+            ctx.font = '20px Arial';
+            ctx.fillText(`Keys: ${keysCollected}/10`, 20, 30);
+        }
+
+        function triggerJumpScare() {
+            jumpScareActive = true;
+            gameRunning = false;
+            document.getElementById('jumpScare').style.display = 'flex';
+            playScreamSound();
+
+            setTimeout(() => {
+                alert('Game Over! Candyna caught you!');
+                backToMenu();
+            }, 3000);
+        }
+
+        function gameLoop() {
+            if (gameRunning || jumpScareActive) {
+                updatePlayer();
+                updateCandyna();
+                checkKeyCollection();
+                draw();
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        function startSpookyMusic() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const gainNode = audioContext.createGain();
+                gainNode.connect(audioContext.destination);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+
+                function createSpookyTone(frequency, duration, delay) {
+                    const oscillator = audioContext.createOscillator();
+                    const toneGain = audioContext.createGain();
+                    oscillator.connect(toneGain);
+                    toneGain.connect(gainNode);
+                    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + delay);
+                    toneGain.gain.setValueAtTime(0, audioContext.currentTime + delay);
+                    toneGain.gain.linearRampToValueAtTime(0.05, audioContext.currentTime + delay + 0.5);
+                    toneGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + delay + duration);
+                    oscillator.start(audioContext.currentTime + delay);
+                    oscillator.stop(audioContext.currentTime + delay + duration);
+                }
+
+                function spookyLoop() {
+                    const spookyNotes = [110, 123, 130, 146, 164, 174];
+                    for (let i = 0; i < 15; i++) {
+                        const note = spookyNotes[Math.floor(Math.random() * spookyNotes.length)];
+                        createSpookyTone(note, 3 + Math.random() * 2, Math.random() * 8);
+                    }
+                    setTimeout(spookyLoop, 10000);
+                }
+
+                spookyLoop();
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function playKeySound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                oscillator.frequency.value = 800;
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function playScreamSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                for (let i = 0; i < 10; i++) {
+                    setTimeout(() => {
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        oscillator.frequency.value = 300 - i * 20;
+                        gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.5);
+                    }, i * 100);
+                }
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function backToMenu() {
+            window.location.href = 'georges_maze_RESTORED.html';
+        }
+
+        window.addEventListener('resize', () => {
+            // Handle resize if needed
+        });
+
+        // Start the game immediately
+        init3DGame();
+    </script>
+</body>
+</html>

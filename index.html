@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Molly - Student Profile</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="tech-lines"></div>
+    <header>
+        <nav>
+            <div class="logo">
+                <h2>🏓 Molly</h2>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#games">Games</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1>Hello, I'm Molly</h1>
+                <p class="hero-subtitle">Student & Chill Developer</p>
+                <button class="cta-button" onclick="scrollToSection('about')">About Me</button>
+                <button class="cta-button games-button" onclick="scrollToSection('games')">Games</button>
+            </div>
+        </section>
+
+        <section id="about" class="about">
+            <div class="container">
+                <h2>About Me</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p>I'm a student passionate about technology, leadership, and problem-solving. I enjoy exploring AI coding projects and tackling mathematical challenges. Outside of tech, I'm active in debate competitions, Navy Cadets, and love playing ping pong in my free time.</p>
+                        <div class="skills">
+                            <h3>Skills & Interests</h3>
+                            <div class="skill-tags">
+                                <span class="skill-tag">AI Coding</span>
+                                <span class="skill-tag">Mathematics</span>
+                                <span class="skill-tag">Debate</span>
+                                <span class="skill-tag">Navy Cadets</span>
+                                <span class="skill-tag">Ping Pong</span>
+                                <span class="skill-tag">Strategic Thinking</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="about-image">
+                        <div class="profile-placeholder">
+                            <span>📚</span>
+                            <p>Molly</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="games" class="games">
+            <div class="container">
+                <h2>Games</h2>
+                <p>Check out the games I've created! More coming soon...</p>
+                <div class="games-grid">
+                    <div class="game-card">
+                        <div class="game-image">
+                            <span class="game-icon">🌀</span>
+                        </div>
+                        <h3>Freaky Maze 🏚️</h3>
+                        <button class="game-button" onclick="window.open('game/georges_maze_RESTORED.html', '_blank')">Play Now</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Molly. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>🏚️ CANDYNA'S HAUNTED HOUSE 3D 🏚️</title>
+    <style>
+        body {
+            margin: 0;
+            background: radial-gradient(circle at 50% 50%, #8A2BE2 0%, #6A0DAD 25%, #4B0082 50%, #2E0054 75%, #1A0033 100%);
+            background-size: 400% 400%;
+            animation: purpleGlow 6s ease-in-out infinite alternate;
+            box-shadow: inset 0 0 200px rgba(138, 43, 226, 0.6);
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        @keyframes purpleGlow {
+            0% {
+                background: radial-gradient(circle at 30% 40%, #8A2BE2 0%, #6A0DAD 25%, #4B0082 50%, #2E0054 75%, #1A0033 100%);
+                box-shadow: inset 0 0 200px rgba(138, 43, 226, 0.8), 0 0 100px rgba(138, 43, 226, 0.4);
+            }
+            50% {
+                background: radial-gradient(circle at 70% 60%, #9932CC 0%, #8A2BE2 25%, #6A0DAD 50%, #4B0082 75%, #2E0054 100%);
+                box-shadow: inset 0 0 300px rgba(153, 50, 204, 0.9), 0 0 150px rgba(153, 50, 204, 0.5);
+            }
+            100% {
+                background: radial-gradient(circle at 50% 20%, #BA55D3 0%, #9932CC 25%, #8A2BE2 50%, #6A0DAD 75%, #4B0082 100%);
+                box-shadow: inset 0 0 250px rgba(186, 85, 211, 1.0), 0 0 120px rgba(186, 85, 211, 0.6);
+            }
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #gameCanvas {
+            border: 3px solid #ff0066;
+            background: #333;
+            box-shadow: 0 0 50px #8A2BE2;
+        }
+
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 18px;
+            z-index: 100;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff0066;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 0 20px rgba(255, 0, 102, 0.5);
+            z-index: 100;
+        }
+
+        .back-button:hover {
+            background: #cc0052;
+            transform: scale(1.05);
+        }
+
+        #instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            text-align: center;
+            z-index: 100;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        #jumpScare {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: red;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: flashRed 0.1s infinite;
+        }
+
+        @keyframes flashRed {
+            0% { background: #ff0000; }
+            50% { background: #990000; }
+            100% { background: #ff0000; }
+        }
+
+        .jumpscare-text {
+            color: white;
+            font-size: 4rem;
+            font-weight: bold;
+            text-shadow: 0 0 30px #ff0066;
+            animation: shake 0.1s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(0); }
+            25% { transform: translate(-10px, 10px); }
+            50% { transform: translate(10px, -10px); }
+            75% { transform: translate(-10px, -10px); }
+            100% { transform: translate(10px, 10px); }
+        }
+
+        #loadingMessage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            z-index: 50;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="loadingMessage">
+            <p>🎮 Loading 3D Game...</p>
+            <p style="font-size: 16px;">If this takes too long, we'll switch to 2.5D mode!</p>
+        </div>
+
+        <div id="ui" style="display: none;">
+            <div>🔑 Keys: <span id="keyCount">0</span>/10</div>
+            <div>👻 Avoid Candyna!</div>
+        </div>
+
+        <button class="back-button" onclick="backToMenu()">← Back to Menu</button>
+
+        <canvas id="gameCanvas" width="800" height="600" style="display: none;"></canvas>
+
+        <div id="instructions" style="display: none;">
+            <p>WASD to move • Mouse to look • Find 10 Keys • Avoid Candyna • Escape!</p>
+        </div>
+
+        <div id="jumpScare">
+            <div class="jumpscare-text">👅 CANDYNA LICKED YOU! 👅</div>
+        </div>
+    </div>
+
+    <script>
+        // Try to load 3D, fallback to advanced 2.5D if it fails
+        let use3D = false;
+        let scene, camera, renderer;
+        let player, candyna;
+        let keys = [];
+        let keysCollected = 0;
+        let gameRunning = true;
+        let jumpScareActive = false;
+
+        // Advanced 2.5D variables (fallback)
+        let ctx;
+        let gameWorld = {
+            player: { x: 100, y: 100, z: 0, angle: 0, size: 20 },
+            candyna: { x: 400, y: 300, z: 0, size: 30, angle: 0 },
+            keys: [],
+            walls: []
+        };
+
+        // Movement
+        let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+        let mouseX = 0, mouseY = 0;
+
+        async function initGame() {
+            // Try 3D first
+            try {
+                console.log('Attempting to load 3D mode...');
+                await loadThreeJS();
+                use3D = true;
+                init3DGame();
+            } catch (error) {
+                console.log('3D failed, switching to advanced 2.5D:', error);
+                use3D = false;
+                init25DGame();
+            }
+        }
+
+        function loadThreeJS() {
+            return new Promise((resolve, reject) => {
+                // Try multiple CDNs
+                const cdnUrls = [
+                    'https://unpkg.com/three@0.155.0/build/three.min.js',
+                    'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+                    'https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js'
+                ];
+
+                let currentCDN = 0;
+
+                function tryLoadScript() {
+                    if (currentCDN >= cdnUrls.length) {
+                        reject(new Error('All CDNs failed'));
+                        return;
+                    }
+
+                    const script = document.createElement('script');
+                    script.src = cdnUrls[currentCDN];
+                    script.onload = () => {
+                        if (typeof THREE !== 'undefined') {
+                            console.log('Three.js loaded successfully from:', cdnUrls[currentCDN]);
+                            resolve();
+                        } else {
+                            currentCDN++;
+                            tryLoadScript();
+                        }
+                    };
+                    script.onerror = () => {
+                        currentCDN++;
+                        tryLoadScript();
+                    };
+
+                    // Timeout after 5 seconds
+                    setTimeout(() => {
+                        if (typeof THREE === 'undefined') {
+                            currentCDN++;
+                            tryLoadScript();
+                        }
+                    }, 5000);
+
+                    document.head.appendChild(script);
+                }
+
+                tryLoadScript();
+            });
+        }
+
+        function init3DGame() {
+            console.log('Starting 3D mode!');
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('ui').style.display = 'block';
+            document.getElementById('gameCanvas').style.display = 'block';
+            document.getElementById('instructions').style.display = 'block';
+
+            try {
+                // Initialize Three.js
+                scene = new THREE.Scene();
+                scene.fog = new THREE.Fog(0x222244, 5, 60);
+
+                camera = new THREE.PerspectiveCamera(75, 800 / 600, 0.1, 1000);
+                camera.position.set(0, 3, 8);
+
+                renderer = new THREE.WebGLRenderer({
+                    canvas: document.getElementById('gameCanvas'),
+                    antialias: true
+                });
+                renderer.setSize(800, 600);
+                renderer.setClearColor(0x333355);
+
+                // SUPER BRIGHT LIGHTING
+                const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+                scene.add(ambientLight);
+
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 2.0);
+                directionalLight.position.set(10, 20, 10);
+                scene.add(directionalLight);
+
+                // Create 3D world
+                create3DWorld();
+                setupControls();
+                animate3D();
+                startSpookyMusic();
+
+            } catch (error) {
+                console.error('3D initialization failed:', error);
+                init25DGame();
+            }
+        }
+
+        function create3DWorld() {
+            // Floor
+            const floorGeometry = new THREE.PlaneGeometry(80, 80);
+            const floorMaterial = new THREE.MeshLambertMaterial({ color: 0x999999 });
+            const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+            floor.rotation.x = -Math.PI / 2;
+            scene.add(floor);
+
+            // Walls
+            const wallMaterial = new THREE.MeshLambertMaterial({ color: 0xaa7777 });
+            const wallPositions = [
+                {pos: [0, 4, -40], size: [80, 8, 2]},
+                {pos: [0, 4, 40], size: [80, 8, 2]},
+                {pos: [-40, 4, 0], size: [2, 8, 80]},
+                {pos: [35, 4, 0], size: [2, 8, 80]}, // Exit gap
+                {pos: [-20, 4, -20], size: [20, 8, 2]},
+                {pos: [20, 4, -20], size: [20, 8, 2]},
+                {pos: [0, 4, 0], size: [2, 8, 40]},
+                {pos: [-20, 4, 20], size: [20, 8, 2]},
+                {pos: [20, 4, 20], size: [20, 8, 2]},
+            ];
+
+            wallPositions.forEach(wallData => {
+                const wallGeometry = new THREE.BoxGeometry(...wallData.size);
+                const wall = new THREE.Mesh(wallGeometry, wallMaterial);
+                wall.position.set(...wallData.pos);
+                scene.add(wall);
+            });
+
+            // Candyna
+            const candynaGroup = new THREE.Group();
+            const candynaBody = new THREE.Mesh(
+                new THREE.SphereGeometry(1.5, 16, 16),
+                new THREE.MeshLambertMaterial({ color: 0xff69b4 })
+            );
+            candynaBody.position.y = 2;
+            candynaGroup.add(candynaBody);
+
+            // Eyes
+            const eyeMaterial = new THREE.MeshBasicMaterial({
+                color: 0xff1493,
+                emissive: 0xff1493
+            });
+            const leftEye = new THREE.Mesh(new THREE.SphereGeometry(0.3), eyeMaterial);
+            leftEye.position.set(-0.6, 2.5, 1.2);
+            candynaGroup.add(leftEye);
+
+            const rightEye = new THREE.Mesh(new THREE.SphereGeometry(0.3), eyeMaterial);
+            rightEye.position.set(0.6, 2.5, 1.2);
+            candynaGroup.add(rightEye);
+
+            // Tongue
+            const tongue = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.2, 0.3, 2),
+                new THREE.MeshLambertMaterial({ color: 0xff91a4 })
+            );
+            tongue.position.set(0, 1.5, 2);
+            tongue.rotation.x = Math.PI / 2;
+            candynaGroup.add(tongue);
+
+            candynaGroup.position.set(-30, 0, -30);
+            candyna = candynaGroup;
+            scene.add(candyna);
+
+            // Keys
+            const keyMaterial = new THREE.MeshBasicMaterial({
+                color: 0x0066ff,
+                emissive: 0x003366
+            });
+
+            const keyPositions = [
+                {x: -30, z: -10}, {x: -10, z: -30}, {x: 10, z: -30},
+                {x: 30, z: -20}, {x: -30, z: 10}, {x: 10, z: 10},
+                {x: 30, z: 30}, {x: -20, z: 30}, {x: 0, z: 35},
+                {x: 25, z: 25}
+            ];
+
+            keyPositions.forEach((pos, i) => {
+                const key = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.3, 0.3, 1),
+                    keyMaterial
+                );
+                key.position.set(pos.x, 2, pos.z);
+                key.userData = { isKey: true, collected: false, id: i };
+                keys.push(key);
+                scene.add(key);
+            });
+        }
+
+        function init25DGame() {
+            console.log('Starting Advanced 2.5D mode!');
+            document.getElementById('loadingMessage').innerHTML = '<p>🎮 Loading Advanced 2.5D Mode...</p>';
+
+            setTimeout(() => {
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('ui').style.display = 'block';
+                document.getElementById('gameCanvas').style.display = 'block';
+                document.getElementById('instructions').innerHTML = '<p>WASD to move • Find 10 Keys • Avoid Candyna • Escape!</p>';
+                document.getElementById('instructions').style.display = 'block';
+
+                ctx = document.getElementById('gameCanvas').getContext('2d');
+
+                // Create 2.5D world
+                create25DWorld();
+                setupControls();
+                animate25D();
+                startSpookyMusic();
+            }, 1000);
+        }
+
+        function create25DWorld() {
+            // Initialize 2.5D world with pseudo-3D effects
+            gameWorld.walls = [
+                {x1: 50, y1: 50, x2: 750, y2: 50, height: 60},
+                {x1: 50, y1: 50, x2: 50, y2: 550, height: 60},
+                {x1: 750, y1: 50, x2: 750, y2: 550, height: 60},
+                {x1: 50, y1: 550, x2: 700, y2: 550, height: 60},
+                {x1: 200, y1: 100, x2: 200, y2: 350, height: 40},
+                {x1: 400, y1: 150, x2: 400, y2: 450, height: 40},
+                {x1: 600, y1: 100, x2: 600, y2: 400, height: 40},
+                {x1: 150, y1: 300, x2: 450, y2: 300, height: 40},
+            ];
+
+            const keyPositions = [
+                {x: 120, y: 120}, {x: 300, y: 120}, {x: 500, y: 120},
+                {x: 650, y: 200}, {x: 120, y: 400}, {x: 250, y: 450},
+                {x: 450, y: 350}, {x: 600, y: 450}, {x: 350, y: 200},
+                {x: 550, y: 300}
+            ];
+
+            keyPositions.forEach((pos, i) => {
+                gameWorld.keys.push({
+                    x: pos.x, y: pos.y, z: 20,
+                    size: 15, collected: false,
+                    angle: i * 0.5, glowPhase: i * 0.3
+                });
+            });
+        }
+
+        function setupControls() {
+            document.addEventListener('keydown', onKeyDown);
+            document.addEventListener('keyup', onKeyUp);
+
+            if (use3D) {
+                document.addEventListener('mousemove', onMouseMove);
+                document.getElementById('gameCanvas').addEventListener('click', () => {
+                    document.getElementById('gameCanvas').requestPointerLock();
+                });
+            }
+        }
+
+        function onKeyDown(event) {
+            switch (event.code) {
+                case 'KeyW': moveForward = true; break;
+                case 'KeyS': moveBackward = true; break;
+                case 'KeyA': moveLeft = true; break;
+                case 'KeyD': moveRight = true; break;
+            }
+        }
+
+        function onKeyUp(event) {
+            switch (event.code) {
+                case 'KeyW': moveForward = false; break;
+                case 'KeyS': moveBackward = false; break;
+                case 'KeyA': moveLeft = false; break;
+                case 'KeyD': moveRight = false; break;
+            }
+        }
+
+        function onMouseMove(event) {
+            if (use3D && document.pointerLockElement === document.getElementById('gameCanvas')) {
+                const sensitivity = 0.003;
+                camera.rotation.y -= event.movementX * sensitivity;
+                camera.rotation.x -= event.movementY * sensitivity;
+                camera.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, camera.rotation.x));
+            }
+        }
+
+        function animate3D() {
+            if (!use3D || !gameRunning) return;
+
+            requestAnimationFrame(animate3D);
+
+            // 3D movement
+            const speed = 0.4;
+            const forward = new THREE.Vector3(0, 0, -1);
+            forward.applyQuaternion(camera.quaternion);
+            forward.y = 0;
+            forward.normalize();
+
+            const right = new THREE.Vector3(1, 0, 0);
+            right.applyQuaternion(camera.quaternion);
+            right.y = 0;
+            right.normalize();
+
+            if (moveForward) camera.position.addScaledVector(forward, speed);
+            if (moveBackward) camera.position.addScaledVector(forward, -speed);
+            if (moveLeft) camera.position.addScaledVector(right, -speed);
+            if (moveRight) camera.position.addScaledVector(right, speed);
+
+            camera.position.y = 3;
+            camera.position.x = Math.max(-38, Math.min(38, camera.position.x));
+            camera.position.z = Math.max(-38, Math.min(38, camera.position.z));
+
+            // Candyna AI
+            if (candyna) {
+                const direction = camera.position.clone().sub(candyna.position).normalize();
+                candyna.position.add(direction.multiplyScalar(0.06));
+                candyna.lookAt(camera.position);
+
+                if (candyna.position.distanceTo(camera.position) < 4) {
+                    triggerJumpScare();
+                }
+            }
+
+            // Key collection
+            keys.forEach(key => {
+                if (!key.userData.collected) {
+                    key.rotation.y += 0.03;
+                    if (key.position.distanceTo(camera.position) < 3) {
+                        key.userData.collected = true;
+                        key.visible = false;
+                        keysCollected++;
+                        document.getElementById('keyCount').textContent = keysCollected;
+                        playKeySound();
+                    }
+                }
+            });
+
+            if (keysCollected >= 10 && camera.position.x > 30 && camera.position.z > -5 && camera.position.z < 5) {
+                gameRunning = false;
+                setTimeout(() => {
+                    alert('🎉 YOU ESCAPED! YOU WIN!');
+                    backToMenu();
+                }, 100);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function animate25D() {
+            if (use3D || !gameRunning) return;
+
+            requestAnimationFrame(animate25D);
+
+            // 2.5D movement
+            const speed = 4;
+            if (moveForward) gameWorld.player.y -= speed;
+            if (moveBackward) gameWorld.player.y += speed;
+            if (moveLeft) gameWorld.player.x -= speed;
+            if (moveRight) gameWorld.player.x += speed;
+
+            // Bounds
+            gameWorld.player.x = Math.max(30, Math.min(770, gameWorld.player.x));
+            gameWorld.player.y = Math.max(30, Math.min(570, gameWorld.player.y));
+
+            // Candyna AI
+            const dx = gameWorld.player.x - gameWorld.candyna.x;
+            const dy = gameWorld.player.y - gameWorld.candyna.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance > 0) {
+                gameWorld.candyna.x += (dx / distance) * 2;
+                gameWorld.candyna.y += (dy / distance) * 2;
+            }
+
+            if (distance < 40) {
+                triggerJumpScare();
+            }
+
+            // Key collection
+            gameWorld.keys.forEach(key => {
+                if (!key.collected) {
+                    const keyDist = Math.sqrt(
+                        (gameWorld.player.x - key.x) * (gameWorld.player.x - key.x) +
+                        (gameWorld.player.y - key.y) * (gameWorld.player.y - key.y)
+                    );
+                    if (keyDist < 30) {
+                        key.collected = true;
+                        keysCollected++;
+                        document.getElementById('keyCount').textContent = keysCollected;
+                        playKeySound();
+                    }
+                }
+            });
+
+            if (keysCollected >= 10 && gameWorld.player.x > 650 && gameWorld.player.y > 500) {
+                gameRunning = false;
+                setTimeout(() => {
+                    alert('🎉 YOU ESCAPED! YOU WIN!');
+                    backToMenu();
+                }, 100);
+            }
+
+            draw25D();
+        }
+
+        function draw25D() {
+            // Advanced 2.5D rendering with pseudo-3D effects
+            ctx.fillStyle = '#333';
+            ctx.fillRect(0, 0, 800, 600);
+
+            // Floor pattern
+            ctx.fillStyle = '#555';
+            for (let x = 0; x < 800; x += 40) {
+                for (let y = 0; y < 600; y += 40) {
+                    if ((Math.floor(x/40) + Math.floor(y/40)) % 2 === 0) {
+                        ctx.fillRect(x, y, 40, 40);
+                    }
+                }
+            }
+
+            // Draw walls with 3D effect
+            gameWorld.walls.forEach(wall => {
+                // Wall face
+                ctx.strokeStyle = '#8B4513';
+                ctx.lineWidth = wall.height || 8;
+                ctx.beginPath();
+                ctx.moveTo(wall.x1, wall.y1);
+                ctx.lineTo(wall.x2, wall.y2);
+                ctx.stroke();
+
+                // 3D shadow
+                ctx.strokeStyle = '#654321';
+                ctx.lineWidth = (wall.height || 8) / 2;
+                ctx.beginPath();
+                ctx.moveTo(wall.x1 + 3, wall.y1 + 3);
+                ctx.lineTo(wall.x2 + 3, wall.y2 + 3);
+                ctx.stroke();
+            });
+
+            // Draw keys with glow
+            gameWorld.keys.forEach(key => {
+                if (!key.collected) {
+                    key.angle += 0.1;
+                    key.glowPhase += 0.05;
+
+                    // Glow
+                    const glowSize = 25 + Math.sin(key.glowPhase) * 8;
+                    ctx.fillStyle = 'rgba(0, 102, 255, 0.4)';
+                    ctx.beginPath();
+                    ctx.arc(key.x, key.y, glowSize, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Key
+                    ctx.fillStyle = '#0066ff';
+                    ctx.beginPath();
+                    ctx.arc(key.x, key.y, key.size, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // 3D highlight
+                    ctx.fillStyle = '#3399ff';
+                    ctx.beginPath();
+                    ctx.arc(key.x - 4, key.y - 4, key.size / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+
+            // Draw Candyna with 3D effect
+            ctx.save();
+            ctx.translate(gameWorld.candyna.x, gameWorld.candyna.y);
+
+            // Shadow
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.beginPath();
+            ctx.arc(3, 3, gameWorld.candyna.size, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Body
+            ctx.fillStyle = '#ff69b4';
+            ctx.beginPath();
+            ctx.arc(0, 0, gameWorld.candyna.size, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 3D highlight
+            ctx.fillStyle = '#ff91d4';
+            ctx.beginPath();
+            ctx.arc(-8, -8, gameWorld.candyna.size * 0.6, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Eyes
+            ctx.fillStyle = '#ff1493';
+            ctx.beginPath();
+            ctx.arc(-10, -8, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(10, -8, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Animated tongue
+            const tongueLength = 20 + Math.sin(Date.now() * 0.01) * 8;
+            const tongueWobble = Math.sin(Date.now() * 0.015) * 4;
+            ctx.fillStyle = '#ff91a4';
+            ctx.fillRect(-3 + tongueWobble, 8, 6, tongueLength);
+
+            ctx.restore();
+
+            // Draw player with 3D effect
+            ctx.save();
+            ctx.translate(gameWorld.player.x, gameWorld.player.y);
+
+            // Shadow
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.fillRect(-gameWorld.player.size/2 + 3, -gameWorld.player.size/2 + 3, gameWorld.player.size, gameWorld.player.size);
+
+            // Body
+            ctx.fillStyle = '#00ff00';
+            ctx.fillRect(-gameWorld.player.size/2, -gameWorld.player.size/2, gameWorld.player.size, gameWorld.player.size);
+
+            // 3D highlight
+            ctx.fillStyle = '#66ff66';
+            ctx.fillRect(-gameWorld.player.size/2, -gameWorld.player.size/2, gameWorld.player.size/2, gameWorld.player.size/2);
+
+            ctx.restore();
+
+            // Exit
+            ctx.fillStyle = keysCollected >= 10 ? '#00ff00' : '#654321';
+            ctx.fillRect(700, 525, 50, 25);
+        }
+
+        function triggerJumpScare() {
+            if (jumpScareActive) return;
+            jumpScareActive = true;
+            gameRunning = false;
+            document.getElementById('jumpScare').style.display = 'flex';
+            playScreamSound();
+
+            setTimeout(() => {
+                alert('Game Over! Candyna caught you!');
+                backToMenu();
+            }, 3000);
+        }
+
+        function startSpookyMusic() {
+            // Same spooky music function as before
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const gainNode = audioContext.createGain();
+                gainNode.connect(audioContext.destination);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+
+                function createSpookyTone(frequency, duration, delay) {
+                    const oscillator = audioContext.createOscillator();
+                    const toneGain = audioContext.createGain();
+                    oscillator.connect(toneGain);
+                    toneGain.connect(gainNode);
+                    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + delay);
+                    toneGain.gain.setValueAtTime(0, audioContext.currentTime + delay);
+                    toneGain.gain.linearRampToValueAtTime(0.05, audioContext.currentTime + delay + 0.5);
+                    toneGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + delay + duration);
+                    oscillator.start(audioContext.currentTime + delay);
+                    oscillator.stop(audioContext.currentTime + delay + duration);
+                }
+
+                function spookyLoop() {
+                    const spookyNotes = [110, 123, 130, 146, 164, 174];
+                    for (let i = 0; i < 15; i++) {
+                        const note = spookyNotes[Math.floor(Math.random() * spookyNotes.length)];
+                        createSpookyTone(note, 3 + Math.random() * 2, Math.random() * 8);
+                    }
+                    setTimeout(spookyLoop, 10000);
+                }
+
+                spookyLoop();
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function playKeySound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                oscillator.frequency.value = 800;
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function playScreamSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                for (let i = 0; i < 10; i++) {
+                    setTimeout(() => {
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        oscillator.frequency.value = 300 - i * 20;
+                        gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.5);
+                    }, i * 100);
+                }
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function backToMenu() {
+            window.location.href = 'georges_maze_RESTORED.html';
+        }
+
+        // Start the game
+        initGame();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>🎮 FREAKY GAMES 🎮</title>
+    <style>
+        body {
+            margin: 0;
+            background: radial-gradient(circle at 50% 50%, #8A2BE2 0%, #6A0DAD 25%, #4B0082 50%, #2E0054 75%, #1A0033 100%);
+            background-size: 400% 400%;
+            animation: purpleGlow 6s ease-in-out infinite alternate;
+            box-shadow: inset 0 0 200px rgba(138, 43, 226, 0.6);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        @keyframes purpleGlow {
+            0% {
+                background: radial-gradient(circle at 30% 40%, #8A2BE2 0%, #6A0DAD 25%, #4B0082 50%, #2E0054 75%, #1A0033 100%);
+                box-shadow: inset 0 0 200px rgba(138, 43, 226, 0.8), 0 0 100px rgba(138, 43, 226, 0.4);
+            }
+            50% {
+                background: radial-gradient(circle at 70% 60%, #9932CC 0%, #8A2BE2 25%, #6A0DAD 50%, #4B0082 75%, #2E0054 100%);
+                box-shadow: inset 0 0 300px rgba(153, 50, 204, 0.9), 0 0 150px rgba(153, 50, 204, 0.5);
+            }
+            100% {
+                background: radial-gradient(circle at 50% 20%, #BA55D3 0%, #9932CC 25%, #8A2BE2 50%, #6A0DAD 75%, #4B0082 100%);
+                box-shadow: inset 0 0 250px rgba(186, 85, 211, 1.0), 0 0 120px rgba(186, 85, 211, 0.6);
+            }
+        }
+
+        h1 {
+            color: #ff0066;
+            font-size: 4rem;
+            text-shadow:
+                0 0 20px #ff0066,
+                0 0 40px #ff0066,
+                0 0 60px #ff0066,
+                0 0 80px #ff3366,
+                0 0 100px #ff3366,
+                0 0 120px #ff6699;
+            margin-bottom: 20px;
+            animation: redGlow 3s ease-in-out infinite alternate;
+            text-align: center;
+        }
+
+        @keyframes redGlow {
+            0% {
+                text-shadow:
+                    0 0 20px #ff0066,
+                    0 0 40px #ff0066,
+                    0 0 60px #ff0066,
+                    0 0 80px #ff3366,
+                    0 0 100px #ff3366;
+            }
+            100% {
+                text-shadow:
+                    0 0 30px #ff0033,
+                    0 0 60px #ff0033,
+                    0 0 90px #ff0033,
+                    0 0 120px #ff3366,
+                    0 0 150px #ff6699,
+                    0 0 200px #ff99cc;
+            }
+        }
+
+        .menu {
+            text-align: center;
+            color: white;
+        }
+
+        .big-button {
+            background: #00ff41;
+            color: black;
+            border: none;
+            padding: 30px 50px;
+            font-size: 28px;
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            margin: 20px;
+            box-shadow: 0 0 30px #00ff41;
+        }
+
+        .big-button:hover {
+            background: #00cc33;
+            transform: scale(1.05);
+        }
+
+        .big-button:disabled {
+            background: #666;
+            color: #999;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .game-selection {
+            text-align: center;
+            color: white;
+            display: none;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .game-card {
+            background: linear-gradient(135deg, #2a1810, #3a2420, #4a3430);
+            border: 2px solid #ff6600;
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 102, 0, 0.4);
+            border-color: #ff8833;
+        }
+
+        .game-card.available {
+            border-color: #00ff41;
+            background: linear-gradient(135deg, #1a2810, #2a3820, #3a4830);
+        }
+
+        .game-card.available:hover {
+            box-shadow: 0 10px 25px rgba(0, 255, 65, 0.4);
+            border-color: #00ff77;
+        }
+
+        .game-title {
+            color: #00ff41;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px #00ff41;
+        }
+
+        .game-description {
+            color: #ccc;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .game-features {
+            color: #00ccff;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .game-status {
+            color: #ff6600;
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        .back-to-menu-btn {
+            background: #ff0066;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 30px;
+            box-shadow: 0 0 20px rgba(255, 0, 102, 0.4);
+        }
+
+        .back-to-menu-btn:hover {
+            background: #cc0052;
+            transform: scale(1.05);
+        }
+
+        canvas {
+            border: 3px solid #ff0066;
+            background: black;
+            box-shadow: 0 0 50px #8A2BE2;
+            display: none;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #ff0066;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 0 20px rgba(255, 0, 102, 0.5);
+        }
+
+        .back-button:hover {
+            background: #cc0052;
+            transform: scale(1.05);
+        }
+
+        .maze-preview {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            padding: 10px;
+            display: none;
+        }
+
+        .maze-label {
+            color: #00ff41;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .game-ui {
+            position: absolute;
+            bottom: 20px;
+            color: white;
+            text-align: center;
+            width: 100%;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- MAIN MENU -->
+    <div id="mainMenu" class="menu">
+        <h1>🎮 FREAKY GAMES 🎮</h1>
+        <p style="color: #00ccff; font-size: 1.5rem;">Choose Your Adventure!</p>
+
+        <button class="big-button" onclick="window.location.href='haunted_house_3d_FIXED.html'">
+            🎯 2D MAZE ADVENTURE 🎯<br>
+            <small style="font-size: 16px;">Classic top-down maze with tongue-licking jump scares!</small>
+        </button>
+
+        <button class="big-button" onclick="window.location.href='haunted_house_WORKING3D.html'">
+            🏚️ 3D HAUNTED HOUSE 🏚️<br>
+            <small style="font-size: 16px;">First-person 3D escape with Candyna the pink monster!</small>
+        </button>
+
+        <p style="color: yellow; margin-top: 30px;">
+            🔑 Find the Keys • 👹 Avoid Monsters • 🚪 Escape
+        </p>
+    </div>
+
+    <!-- 2D GAME SELECTION -->
+    <div id="gameSelection" class="game-selection">
+        <h1>🎯 2D GAMES COLLECTION 🎯</h1>
+        <p style="color: #00ccff; font-size: 1.3rem;">Choose Your 2D Adventure!</p>
+
+        <div class="games-grid">
+            <!-- MAZE CHASE - Available -->
+            <div class="game-card available" onclick="showMazeLevelSelection()">
+                <div class="game-title">👹 MAZE CHASE 👹</div>
+                <div class="game-description">
+                    Navigate through a dark maze while being hunted by George the monster!
+                    Find the blue key and escape to win!
+                </div>
+                <div class="game-features">
+                    ✅ Smart AI pathfinding<br>
+                    ✅ Epic jump scares<br>
+                    ✅ Live mini-map<br>
+                    ✅ Adventure music
+                </div>
+                <div class="game-status" style="color: #00ff41;">🎮 CHOOSE DIFFICULTY!</div>
+            </div>
+
+            <!-- Future Game Slot 1 -->
+            <div class="game-card">
+                <div class="game-title" style="color: #999;">🏃 GEORGE'S ESCAPE 🏃</div>
+                <div class="game-description">
+                    Fast-paced runner game where you dash through obstacle courses
+                    while George chases you at increasing speeds!
+                </div>
+                <div class="game-features">
+                    🔄 Power-ups and boosts<br>
+                    🔄 Multiple environments<br>
+                    🔄 Boss battles
+                </div>
+                <div class="game-status">🚧 COMING SOON!</div>
+            </div>
+
+            <!-- Future Game Slot 2 -->
+            <div class="game-card">
+                <div class="game-title" style="color: #999;">🎯 GEORGE'S SHOOTING GALLERY 🎯</div>
+                <div class="game-description">
+                    Defend yourself against waves of George clones in this
+                    action-packed shooting game!
+                </div>
+                <div class="game-features">
+                    🔄 Multiple weapons<br>
+                    🔄 Wave-based gameplay<br>
+                    🔄 Leaderboards
+                </div>
+                <div class="game-status">🚧 COMING SOON!</div>
+            </div>
+        </div>
+
+        <button class="back-to-menu-btn" onclick="backToMainMenu()">← Back to Main Menu</button>
+    </div>
+
+    <!-- 3D GAME SELECTION -->
+    <div id="game3DSelection" class="game-selection">
+        <h1>🌟 3D GAMES COLLECTION 🌟</h1>
+        <p style="color: #00ccff; font-size: 1.3rem;">Choose Your 3D Adventure!</p>
+
+        <div class="games-grid">
+            <!-- HAUNTED HOUSE - Available -->
+            <div class="game-card available" onclick="startHauntedHouse3D()">
+                <div class="game-title">🏚️ HAUNTED HOUSE ESCAPE 🏚️</div>
+                <div class="game-description">
+                    First-person 3D escape game! Navigate through a spooky haunted house
+                    while avoiding Candyna, George's pink sister monster!
+                </div>
+                <div class="game-features">
+                    ✅ Real 3D graphics<br>
+                    ✅ First-person view<br>
+                    ✅ Mouse look controls<br>
+                    ✅ 10 keys to collect
+                </div>
+                <div class="game-status" style="color: #00ff41;">🎮 CHOOSE DIFFICULTY!</div>
+            </div>
+
+            <!-- Future Game Slot 1 -->
+            <div class="game-card">
+                <div class="game-title" style="color: #999;">🌙 MOONLIGHT MANOR 🌙</div>
+                <div class="game-description">
+                    Explore a massive 3D Victorian mansion with multiple floors,
+                    secret passages, and terrifying creatures lurking in every room!
+                </div>
+                <div class="game-features">
+                    🔄 Multi-floor exploration<br>
+                    🔄 Secret passages<br>
+                    🔄 Inventory system
+                </div>
+                <div class="game-status">🚧 COMING SOON!</div>
+            </div>
+
+            <!-- Future Game Slot 2 -->
+            <div class="game-card">
+                <div class="game-title" style="color: #999;">🌲 FOREST OF FEARS 🌲</div>
+                <div class="game-description">
+                    Survive in a dark 3D forest filled with twisted trees,
+                    hidden monsters, and mysterious glowing artifacts!
+                </div>
+                <div class="game-features">
+                    🔄 Open world exploration<br>
+                    🔄 Dynamic weather<br>
+                    🔄 Survival elements
+                </div>
+                <div class="game-status">🚧 COMING SOON!</div>
+            </div>
+
+            <!-- Future Game Slot 3 -->
+            <div class="game-card">
+                <div class="game-title" style="color: #999;">🚂 PHANTOM TRAIN 🚂</div>
+                <div class="game-description">
+                    Board a ghostly 3D train that travels through dimensions!
+                    Solve puzzles in each car while avoiding supernatural passengers!
+                </div>
+                <div class="game-features">
+                    🔄 Moving train environment<br>
+                    🔄 Dimension hopping<br>
+                    🔄 Puzzle solving
+                </div>
+                <div class="game-status">🚧 COMING SOON!</div>
+            </div>
+        </div>
+
+        <button class="back-to-menu-btn" onclick="backToMainMenu()">← Back to Main Menu</button>
+    </div>
+
+    <!-- MAZE LEVEL SELECTION -->
+    <div id="mazeLevelSelection" class="game-selection">
+        <h1>👹 MAZE CHASE DIFFICULTY 👹</h1>
+        <p style="color: #00ccff; font-size: 1.3rem;">Choose Your Challenge Level!</p>
+        <div class="games-grid">
+            <!-- EASY LEVEL -->
+            <div class="game-card available" onclick="startMazeChase('easy')">
+                <div class="game-title" style="color: #00ff41;">😊 EASY 😊</div>
+                <div class="game-description">
+                    Perfect for beginners! George moves slowly and you have plenty of time to escape.
+                </div>
+                <div class="game-features">
+                    ✅ George speed: Slow<br>
+                    ✅ Extra time to think<br>
+                    ✅ Forgiving gameplay<br>
+                    ✅ Great for learning
+                </div>
+                <div class="game-status" style="color: #00ff41;">🎮 PLAY NOW!</div>
+            </div>
+            <!-- HARD LEVEL -->
+            <div class="game-card available" onclick="startMazeChase('hard')">
+                <div class="game-title" style="color: #ffaa00;">😰 HARD 😰</div>
+                <div class="game-description">
+                    The standard challenge! George moves at normal speed and will hunt you relentlessly.
+                </div>
+                <div class="game-features">
+                    ✅ George speed: Normal<br>
+                    ✅ Balanced difficulty<br>
+                    ✅ Classic experience<br>
+                    ✅ True challenge
+                </div>
+                <div class="game-status" style="color: #00ff41;">🎮 PLAY NOW!</div>
+            </div>
+            <!-- EXTREME LEVEL -->
+            <div class="game-card available" onclick="startMazeChase('extreme')">
+                <div class="game-title" style="color: #ff3333;">💀 EXTREME 💀</div>
+                <div class="game-description">
+                    Only for the brave! George moves lightning fast, phases through walls, and shows no mercy. Bigger maze with 4 keys required!
+                </div>
+                <div class="game-features">
+                    ✅ George speed: VERY FAST<br>
+                    ✅ George phases through walls<br>
+                    ✅ Bigger maze (25x19)<br>
+                    ✅ Collect 4 keys<br>
+                    ✅ Ultimate challenge<br>
+                    ✅ No room for error<br>
+                    ✅ Adrenaline rush!
+                </div>
+                <div class="game-status" style="color: #00ff41;">🎮 PLAY NOW!</div>
+            </div>
+        </div>
+        <button class="back-to-menu-btn" onclick="backToGameSelection()">← Back to 2D Games</button>
+    </div>
+
+    <!-- GAME AREA -->
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <button class="back-button" id="backButton" onclick="backToMenu()" style="display: none;">← Back to Games</button>
+
+    <!-- MAZE PREVIEW -->
+    <div class="maze-preview" id="mazePreview">
+        <canvas id="previewCanvas" width="200" height="150"></canvas>
+        <div class="maze-label">MAZE CHASE</div>
+    </div>
+
+    <div class="game-ui" id="gameUI">
+        <p id="gameInstructions">WASD to move • Find the Keys • Avoid Monsters • Escape</p>
+        <p>Keys: <span id="keyCount">0</span></p>
+    </div>
+
+    <script>
+        // Menu Functions
+        function showMenu() {
+            document.getElementById('mainMenu').style.display = 'block';
+            document.getElementById('gameSelection').style.display = 'none';
+            document.getElementById('game3DSelection').style.display = 'none';
+            document.getElementById('mazeLevelSelection').style.display = 'none';
+            document.getElementById('gameCanvas').style.display = 'none';
+            document.getElementById('backButton').style.display = 'none';
+            document.getElementById('gameUI').style.display = 'none';
+            document.getElementById('mazePreview').style.display = 'none';
+        }
+
+        function showGameSelection() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('gameSelection').style.display = 'block';
+            document.getElementById('game3DSelection').style.display = 'none';
+            document.getElementById('mazeLevelSelection').style.display = 'none';
+            document.getElementById('gameCanvas').style.display = 'none';
+            document.getElementById('backButton').style.display = 'none';
+            document.getElementById('gameUI').style.display = 'none';
+            document.getElementById('mazePreview').style.display = 'none';
+        }
+
+        function show3DGameSelection() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('gameSelection').style.display = 'none';
+            document.getElementById('game3DSelection').style.display = 'block';
+            document.getElementById('gameCanvas').style.display = 'none';
+            document.getElementById('backButton').style.display = 'none';
+            document.getElementById('gameUI').style.display = 'none';
+            document.getElementById('mazePreview').style.display = 'none';
+        }
+
+        function hideMenu() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('gameSelection').style.display = 'none';
+            document.getElementById('game3DSelection').style.display = 'none';
+            document.getElementById('mazeLevelSelection').style.display = 'none';
+            document.getElementById('gameCanvas').style.display = 'block';
+            document.getElementById('backButton').style.display = 'block';
+            document.getElementById('gameUI').style.display = 'block';
+            document.getElementById('mazePreview').style.display = 'block';
+            createMazePreview();
+        }
+
+        function backToMenu() {
+            showGameSelection();
+            gameRunning = false;
+            stopBackgroundMusic();
+        }
+
+        function start2DGame() {
+            showGameSelection();
+        }
+
+        function start3DGame() {
+            show3DGameSelection();
+        }
+
+        function backToMainMenu() {
+            showMenu();
+            gameRunning = false;
+            stopBackgroundMusic();
+        }
+
+        let gameDifficulty = "hard";
+
+        function startMazeChase(difficulty = "hard") {
+            gameDifficulty = difficulty;
+            hideMenu();
+            init2DGame();
+        }
+
+        function startHauntedHouse3D() {
+            window.location.href = "haunted_house_WORKING3D.html";
+        }
+
+        function showMazeLevelSelection() {
+            document.getElementById("mainMenu").style.display = "none";
+            document.getElementById("gameSelection").style.display = "none";
+            document.getElementById("game3DSelection").style.display = "none";
+            document.getElementById("mazeLevelSelection").style.display = "block";
+            document.getElementById("gameCanvas").style.display = "none";
+            document.getElementById("backButton").style.display = "none";
+            document.getElementById("gameUI").style.display = "none";
+            document.getElementById("mazePreview").style.display = "none";
+        }
+
+        function backToGameSelection() {
+            showGameSelection();
+        }
+
+        // Game variables
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let georgeAnimation = 0;
+        let jumpScareActive = false;
+        let jumpScareTime = 0;
+
+        // Audio context for music and sound effects
+        let audioContext;
+        let backgroundMusic = null;
+        let musicGainNode = null;
+
+        // Game state
+        let player = { x: 50, y: 50, size: 15 };
+        let george = { x: 400, y: 300, size: 40 };
+        let key = { x: 600, y: 100, size: 10, collected: false };
+        let keys = [];
+        let hasKey = false;
+        let keysCollected = 0;
+        let currentMaze = maze;
+        let keysRequired = 1;
+        let gameRunning = false;
+
+        // Simple maze layout (1 = wall, 0 = path, 9 = exit)
+        const maze = [
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,0,1,0,1,0,1,1,1,1,1,0,1,1,0,1],
+            [1,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0,1,0,0,1],
+            [1,1,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1],
+            [1,0,1,1,1,1,1,1,0,1,0,1,1,0,1,1,1,1,0,1],
+            [1,0,0,0,0,0,0,1,0,1,0,1,0,0,1,0,0,0,0,1],
+            [1,1,1,1,1,1,0,1,0,0,0,1,0,1,1,0,1,1,1,1],
+            [1,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,0,1],
+            [1,0,0,0,0,1,1,1,1,0,1,1,1,1,0,0,0,0,0,1],
+            [1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1],
+            [1,0,0,0,0,1,1,1,1,0,1,1,1,1,0,0,0,0,0,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,9,1]
+        ];
+
+        // Bigger maze for extreme difficulty
+        const extremeMaze = [
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,0,1,0,1,0,1,1,1,1,1,0,1,1,0,1,1,1,0,0,1],
+            [1,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0,0,1],
+            [1,1,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,0,1,0,1,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,1,1,1,0,1,0,1,1,0,1,1,1,1,0,1,1,1,1,0,1],
+            [1,0,0,0,0,0,0,1,0,1,0,1,0,0,1,0,0,0,0,0,0,0,1,0,1],
+            [1,1,1,1,1,1,0,1,0,0,0,1,0,1,1,0,1,1,1,1,1,0,1,0,1],
+            [1,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,0,1,1,1,0,1,1],
+            [1,0,0,0,0,1,1,1,1,0,1,1,1,1,0,0,0,0,0,0,0,1,0,0,1],
+            [1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,1,1,0,1],
+            [1,0,0,0,0,1,1,1,1,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,1,1,1,0,1],
+            [1,0,0,1,1,1,1,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1],
+            [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,1,1,1,0,1,1],
+            [1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,9,1]
+        ];
+
+        const WALL_SIZE = 40;
+
+        // Input handling
+        const keys = {};
+        document.addEventListener('keydown', (e) => {
+            keys[e.code] = true;
+            if (e.code === 'Escape') {
+                // ESC key handling for menu
+                e.preventDefault();
+            }
+        });
+        document.addEventListener('keyup', (e) => keys[e.code] = false);
+
+        function init2DGame() {
+            currentMaze = (gameDifficulty === "extreme") ? extremeMaze : maze;
+            keysRequired = (gameDifficulty === "extreme") ? 4 : 1;
+            gameRunning = true;
+            jumpScareActive = false;
+            jumpScareTime = 0;
+            georgeAnimation = 0;
+            player = { x: 50, y: 50, size: 15 };
+            george = { x: 400, y: 300, size: 40 };
+            keysCollected = 0;
+
+            if (gameDifficulty === "extreme") {
+                keys = [
+                    {x: 200, y: 150, collected: false},
+                    {x: 500, y: 250, collected: false},
+                    {x: 300, y: 450, collected: false},
+                    {x: 700, y: 350, collected: false}
+                ];
+            } else {
+                key = { x: 600, y: 100, size: 10, collected: false };
+                keys = [];
+            }
+
+            hasKey = false;
+            document.getElementById('keyCount').textContent = '0';
+            startBackgroundMusic();
+            console.log('2D Maze Chase started!');
+            gameLoop2D();
+        }
+
+        function startBackgroundMusic() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                musicGainNode = audioContext.createGain();
+                musicGainNode.connect(audioContext.destination);
+                musicGainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+
+                function createTone(frequency, duration, delay, volume) {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(musicGainNode);
+                    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + delay);
+                    gainNode.gain.setValueAtTime(0, audioContext.currentTime + delay);
+                    gainNode.gain.linearRampToValueAtTime(volume, audioContext.currentTime + delay + 0.2);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + delay + duration);
+                    oscillator.start(audioContext.currentTime + delay);
+                    oscillator.stop(audioContext.currentTime + delay + duration);
+                    return oscillator;
+                }
+
+                function createAdventureLoop() {
+                    const loopDuration = 16;
+                    createTone(110, loopDuration, 0, 0.04);
+                    createTone(165, loopDuration, 0, 0.03);
+                    const melodyNotes = [523, 587, 659, 698, 784, 880, 988, 1047];
+                    for (let i = 0; i < loopDuration; i += 2) {
+                        const noteIndex = Math.floor(Math.random() * melodyNotes.length);
+                        createTone(melodyNotes[noteIndex], 1.2, i, 0.06);
+                        if (Math.random() > 0.5) {
+                            const harmonyNote = melodyNotes[Math.min(noteIndex + 2, melodyNotes.length - 1)];
+                            createTone(harmonyNote, 0.8, i + 0.3, 0.04);
+                        }
+                    }
+                    for (let i = 0; i < loopDuration; i += 1) {
+                        if (i % 4 === 0) {
+                            createTone(330, 0.3, i, 0.05);
+                        } else if (i % 2 === 0) {
+                            createTone(392, 0.2, i, 0.03);
+                        }
+                    }
+                    for (let i = 0; i < loopDuration; i += 4) {
+                        createTone(1500 + Math.random() * 300, 0.4, i + Math.random(), 0.02);
+                    }
+                    setTimeout(createAdventureLoop, loopDuration * 1000);
+                }
+
+                createAdventureLoop();
+                console.log('Cheerful adventure music started!');
+            } catch (error) {
+                console.log('Audio not supported:', error);
+            }
+        }
+
+        function stopBackgroundMusic() {
+            if (musicGainNode) {
+                musicGainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                setTimeout(() => {
+                    if (audioContext) {
+                        audioContext.close();
+                    }
+                }, 1000);
+            }
+        }
+
+        function playVictorySound() {
+            try {
+                const victoryContext = new (window.AudioContext || window.webkitAudioContext)();
+                function playNote(frequency, duration, delay) {
+                    const oscillator = victoryContext.createOscillator();
+                    const gainNode = victoryContext.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(victoryContext.destination);
+                    oscillator.frequency.value = frequency;
+                    gainNode.gain.setValueAtTime(0.3, victoryContext.currentTime + delay);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, victoryContext.currentTime + delay + duration);
+                    oscillator.start(victoryContext.currentTime + delay);
+                    oscillator.stop(victoryContext.currentTime + delay + duration);
+                }
+                const victoryMelody = [523, 659, 784, 1047, 1047, 784, 659, 523];
+                victoryMelody.forEach((note, i) => {
+                    playNote(note, 0.5, i * 0.3);
+                });
+                console.log('Victory sound played!');
+            } catch (error) {
+                console.log('Audio not supported:', error);
+            }
+        }
+
+        function playDeathSound() {
+            try {
+                const deathContext = new (window.AudioContext || window.webkitAudioContext)();
+                function playScaryNote(frequency, duration, delay) {
+                    const oscillator = deathContext.createOscillator();
+                    const gainNode = deathContext.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(deathContext.destination);
+                    oscillator.frequency.value = frequency;
+                    gainNode.gain.setValueAtTime(0.4, deathContext.currentTime + delay);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, deathContext.currentTime + delay + duration);
+                    oscillator.start(deathContext.currentTime + delay);
+                    oscillator.stop(deathContext.currentTime + delay + duration);
+                }
+                const scaryNotes = [200, 150, 100, 80, 60];
+                scaryNotes.forEach((note, i) => {
+                    playScaryNote(note, 1.0, i * 0.2);
+                });
+                console.log('Death sound played!');
+            } catch (error) {
+                console.log('Audio not supported:', error);
+            }
+        }
+
+        function createMazePreview() {
+            const previewCanvas = document.getElementById('previewCanvas');
+            const previewCtx = previewCanvas.getContext('2d');
+            const scale = 10;
+            previewCtx.fillStyle = '#000';
+            previewCtx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
+            previewCtx.fillStyle = '#333';
+            for (let row = 0; row < currentMaze.length; row++) {
+                for (let col = 0; col < currentMaze[row].length; col++) {
+                    if (currentMaze[row][col] === 1) {
+                        previewCtx.fillRect(col * scale, row * scale, scale, scale);
+                    } else if (currentMaze[row][col] === 9) {
+                        previewCtx.fillStyle = hasKey ? '#00ff00' : '#666';
+                        previewCtx.fillRect(col * scale, row * scale, scale, scale);
+                        previewCtx.fillStyle = '#333';
+                    }
+                }
+            }
+            previewCtx.fillStyle = '#00ff41';
+            const playerPreviewX = Math.floor(player.x / WALL_SIZE) * scale + scale/2;
+            const playerPreviewY = Math.floor(player.y / WALL_SIZE) * scale + scale/2;
+            previewCtx.beginPath();
+            previewCtx.arc(playerPreviewX, playerPreviewY, 3, 0, Math.PI * 2);
+            previewCtx.fill();
+            previewCtx.fillStyle = '#ff0000';
+            const georgePreviewX = Math.floor(george.x / WALL_SIZE) * scale + scale/2;
+            const georgePreviewY = Math.floor(george.y / WALL_SIZE) * scale + scale/2;
+            previewCtx.beginPath();
+            previewCtx.arc(georgePreviewX, georgePreviewY, 3, 0, Math.PI * 2);
+            previewCtx.fill();
+
+            if (gameDifficulty === "extreme") {
+                for (let i = 0; i < keys.length; i++) {
+                    if (!keys[i].collected) {
+                        previewCtx.fillStyle = '#0066ff';
+                        const keyPreviewX = Math.floor(keys[i].x / WALL_SIZE) * scale + scale/2;
+                        const keyPreviewY = Math.floor(keys[i].y / WALL_SIZE) * scale + scale/2;
+                        previewCtx.beginPath();
+                        previewCtx.arc(keyPreviewX, keyPreviewY, 2, 0, Math.PI * 2);
+                        previewCtx.fill();
+                    }
+                }
+            } else if (!key.collected) {
+                previewCtx.fillStyle = '#0066ff';
+                const keyPreviewX = Math.floor(key.x / WALL_SIZE) * scale + scale/2;
+                const keyPreviewY = Math.floor(key.y / WALL_SIZE) * scale + scale/2;
+                previewCtx.beginPath();
+                previewCtx.arc(keyPreviewX, keyPreviewY, 2, 0, Math.PI * 2);
+                previewCtx.fill();
+            }
+        }
+
+        function isWall(x, y) {
+            const gridX = Math.floor(x / WALL_SIZE);
+            const gridY = Math.floor(y / WALL_SIZE);
+            if (gridY < 0 || gridY >= currentMaze.length || gridX < 0 || gridX >= currentMaze[0].length) {
+                return true;
+            }
+            return currentMaze[gridY][gridX] === 1;
+        }
+
+        function movePlayer() {
+            if (!gameRunning) return;
+            const speed = 3;
+            let newX = player.x;
+            let newY = player.y;
+            if (keys['KeyW'] || keys['ArrowUp']) newY -= speed;
+            if (keys['KeyS'] || keys['ArrowDown']) newY += speed;
+            if (keys['KeyA'] || keys['ArrowLeft']) newX -= speed;
+            if (keys['KeyD'] || keys['ArrowRight']) newX += speed;
+            if (!isWall(newX, player.y) && !isWall(newX + player.size, player.y) &&
+                !isWall(newX, player.y + player.size) && !isWall(newX + player.size, player.y + player.size)) {
+                player.x = newX;
+            }
+            if (!isWall(player.x, newY) && !isWall(player.x + player.size, newY) &&
+                !isWall(player.x, newY + player.size) && !isWall(player.x + player.size, newY + player.size)) {
+                player.y = newY;
+            }
+        }
+
+        function moveGeorge() {
+            if (!gameRunning) return;
+            const dx = player.x - george.x;
+            const dy = player.y - george.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance > 0) {
+                let speed = 1.2;
+                if (gameDifficulty === "easy") speed = 0.8;
+                else if (gameDifficulty === "extreme") speed = 2.0;
+
+                let moveX = (dx / distance) * speed;
+                let moveY = (dy / distance) * speed;
+                let newX = george.x + moveX;
+                let newY = george.y + moveY;
+
+                function georgeCanMoveTo(x, y) {
+                    const margin = 5;
+                    return !isWall(x + margin, y + margin) &&
+                           !isWall(x + george.size - margin, y + margin) &&
+                           !isWall(x + margin, y + george.size - margin) &&
+                           !isWall(x + george.size - margin, y + george.size - margin);
+                }
+
+                if (gameDifficulty === "extreme") {
+                    george.x = newX;
+                    george.y = newY;
+                } else if (georgeCanMoveTo(newX, newY)) {
+                    george.x = newX;
+                    george.y = newY;
+                } else {
+                    if (georgeCanMoveTo(newX, george.y)) {
+                        george.x = newX;
+                    } else if (georgeCanMoveTo(george.x, newY)) {
+                        george.y = newY;
+                    } else {
+                        const altMoveX = moveY * 0.7;
+                        const altMoveY = moveX * 0.7;
+                        if (georgeCanMoveTo(george.x + altMoveX, george.y + altMoveY)) {
+                            george.x += altMoveX;
+                            george.y += altMoveY;
+                        } else if (georgeCanMoveTo(george.x - altMoveX, george.y - altMoveY)) {
+                            george.x -= altMoveX;
+                            george.y -= altMoveY;
+                        }
+                    }
+                }
+            }
+        }
+
+        function checkCollisions() {
+            if (gameDifficulty === "extreme") {
+                for (let i = 0; i < keys.length; i++) {
+                    if (!keys[i].collected) {
+                        const dx = player.x - keys[i].x;
+                        const dy = player.y - keys[i].y;
+                        if (Math.sqrt(dx * dx + dy * dy) < 25) {
+                            keys[i].collected = true;
+                            keysCollected++;
+                            document.getElementById("keyCount").textContent = keysCollected;
+                        }
+                    }
+                }
+            } else if (!key.collected) {
+                const dx = player.x - key.x;
+                const dy = player.y - key.y;
+                if (Math.sqrt(dx * dx + dy * dy) < 25) {
+                    key.collected = true;
+                    hasKey = true;
+                    document.getElementById('keyCount').textContent = '1';
+                }
+            }
+
+            const dx = player.x - george.x;
+            const dy = player.y - george.y;
+            if (Math.sqrt(dx * dx + dy * dy) < 30 && !jumpScareActive) {
+                gameRunning = false;
+                jumpScareActive = true;
+                jumpScareTime = 0;
+                playDeathSound();
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        try {
+                            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                            const oscillator = audioContext.createOscillator();
+                            const gainNode = audioContext.createGain();
+                            oscillator.connect(gainNode);
+                            gainNode.connect(audioContext.destination);
+                            oscillator.frequency.value = 200 - i * 20;
+                            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                            oscillator.start(audioContext.currentTime);
+                            oscillator.stop(audioContext.currentTime + 0.3);
+                        } catch(e) {
+                            console.log('Audio not supported');
+                        }
+                    }, i * 100);
+                }
+            }
+
+            if (hasKey && player.x > 720 && player.y > 550) {
+                gameRunning = false;
+                stopBackgroundMusic();
+                playVictorySound();
+                setTimeout(() => {
+                    alert('🎉 YOU ESCAPED! YOU WIN! Press OK to return to game selection.');
+                    showGameSelection();
+                }, 100);
+            }
+        }
+
+        function draw2D() {
+            if (jumpScareActive) {
+                jumpScareTime += 0.2;
+                const flashIntensity = Math.sin(jumpScareTime * 10) * 0.5 + 0.5;
+                ctx.fillStyle = 'rgb(' + Math.floor(255 * flashIntensity) + ', 0, 0)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const scareSize = 200 + Math.sin(jumpScareTime * 5) * 50;
+                ctx.fillStyle = '#660000';
+                ctx.fillRect(centerX - scareSize/2, centerY - scareSize/2, scareSize, scareSize);
+                ctx.shadowColor = '#ff0000';
+                ctx.shadowBlur = 30;
+                ctx.fillStyle = '#ff0000';
+                const eyeSize = 40 + Math.sin(jumpScareTime * 8) * 10;
+                ctx.fillRect(centerX - scareSize/3, centerY - scareSize/4, eyeSize, eyeSize);
+                ctx.fillRect(centerX + scareSize/6, centerY - scareSize/4, eyeSize, eyeSize);
+                ctx.fillStyle = '#330000';
+                ctx.fillRect(centerX - scareSize/4, centerY + scareSize/8, scareSize/2, scareSize/3);
+                const tongueLength = 80 + Math.sin(jumpScareTime * 8) * 25;
+                const lickMotion = Math.sin(jumpScareTime * 10) * 30;
+                ctx.fillStyle = '#ff8899';
+                ctx.beginPath();
+                ctx.moveTo(centerX - 15 + lickMotion, centerY + scareSize/4);
+                ctx.quadraticCurveTo(centerX - 10 + lickMotion, centerY + scareSize/4 + tongueLength/2, centerX - 8 + lickMotion, centerY + scareSize/4 + tongueLength);
+                ctx.quadraticCurveTo(centerX + lickMotion, centerY + scareSize/4 + tongueLength + 8, centerX + 8 + lickMotion, centerY + scareSize/4 + tongueLength);
+                ctx.quadraticCurveTo(centerX + 10 + lickMotion, centerY + scareSize/4 + tongueLength/2, centerX + 15 + lickMotion, centerY + scareSize/4);
+                ctx.closePath();
+                ctx.fill();
+                ctx.strokeStyle = '#dd5577';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(centerX + lickMotion, centerY + scareSize/4);
+                ctx.lineTo(centerX + lickMotion, centerY + scareSize/4 + tongueLength);
+                ctx.stroke();
+                ctx.fillStyle = '#fff';
+                for (let i = 0; i < 4; i++) {
+                    ctx.fillRect(centerX - scareSize/4 + i * 25, centerY + scareSize/8, 8, 15);
+                }
+                for (let i = 0; i < 4; i++) {
+                    ctx.fillRect(centerX - scareSize/4 + 10 + i * 25, centerY + scareSize/3, 8, 15);
+                }
+                ctx.shadowBlur = 10;
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 48px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('👅 *LICK LICK* GOTCHA! 👅', centerX, centerY + scareSize/2 + 120);
+                ctx.shadowBlur = 0;
+                if (jumpScareTime > 15) {
+                    stopBackgroundMusic();
+                    setTimeout(() => {
+                        alert('Game Over! Press OK to return to game selection.');
+                        showGameSelection();
+                    }, 500);
+                }
+                return;
+            }
+
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#333';
+            for (let row = 0; row < currentMaze.length; row++) {
+                for (let col = 0; col < currentMaze[row].length; col++) {
+                    if (currentMaze[row][col] === 1) {
+                        ctx.fillRect(col * WALL_SIZE, row * WALL_SIZE, WALL_SIZE, WALL_SIZE);
+                    } else if (currentMaze[row][col] === 9) {
+                        ctx.fillStyle = hasKey ? '#00ff00' : '#666';
+                        ctx.fillRect(col * WALL_SIZE, row * WALL_SIZE, WALL_SIZE, WALL_SIZE);
+                        ctx.fillStyle = '#333';
+                    }
+                }
+            }
+
+            if (gameDifficulty === "extreme") {
+                for (let i = 0; i < keys.length; i++) {
+                    if (!keys[i].collected) {
+                        ctx.fillStyle = '#0066ff';
+                        ctx.beginPath();
+                        ctx.arc(keys[i].x, keys[i].y, 10, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.shadowColor = '#0066ff';
+                        ctx.shadowBlur = 20;
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                    }
+                }
+            } else if (!key.collected) {
+                ctx.fillStyle = '#0066ff';
+                ctx.beginPath();
+                ctx.arc(key.x, key.y, key.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowColor = '#0066ff';
+                ctx.shadowBlur = 20;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+
+            ctx.fillStyle = '#00ff00';
+            ctx.fillRect(player.x, player.y, player.size, player.size);
+            georgeAnimation += 0.1;
+            ctx.fillStyle = '#660000';
+            ctx.fillRect(george.x, george.y, george.size, george.size);
+            ctx.fillStyle = '#ff0000';
+            const eyeSize = 6 + Math.sin(georgeAnimation) * 2;
+            ctx.fillRect(george.x + 8, george.y + 8, eyeSize, eyeSize);
+            ctx.fillRect(george.x + 24, george.y + 8, eyeSize, eyeSize);
+            ctx.shadowColor = '#ff0000';
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = '#ffaaaa';
+            ctx.fillRect(george.x + 10, george.y + 10, 4, 4);
+            ctx.fillRect(george.x + 26, george.y + 10, 4, 4);
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(george.x + 12, george.y + 25, 16, 8);
+            ctx.fillStyle = '#fff';
+            for (let i = 0; i < 3; i++) {
+                ctx.fillRect(george.x + 14 + i * 4, george.y + 25, 2, 4);
+            }
+        }
+
+        function gameLoop2D() {
+            if (!gameRunning && !jumpScareActive) return;
+            movePlayer();
+            moveGeorge();
+            checkCollisions();
+            draw2D();
+            if (Math.random() < 0.1) {
+                createMazePreview();
+            }
+            requestAnimationFrame(gameLoop2D);
+        }
+
+        showMenu();
+    </script>
+</body>
+</html>

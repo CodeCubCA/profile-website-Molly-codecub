@@ -766,6 +766,274 @@ section {
     box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2);
 }
 
+/* Portfolio Project Card - Special Layout */
+.portfolio-card {
+    grid-column: 1 / -1;
+    margin-top: 2rem;
+}
+
+/* AI Chatbox Card - Purple/Pink Theme */
+.ai-chatbox-card {
+    grid-column: 1 / -1;
+    margin-top: 2rem;
+    border-left: 3px solid rgba(168, 85, 247, 0.6);
+    box-shadow:
+        0 10px 30px rgba(168, 85, 247, 0.25),
+        0 0 20px rgba(168, 85, 247, 0.15),
+        inset 0 1px 0 rgba(236, 72, 153, 0.15);
+    transition: all 0.3s ease;
+}
+
+.ai-chatbox-card:hover {
+    transform: scale(1.02);
+    box-shadow:
+        0 20px 40px rgba(168, 85, 247, 0.4),
+        0 0 40px rgba(236, 72, 153, 0.25),
+        inset 0 1px 0 rgba(236, 72, 153, 0.3);
+    border-left-color: rgba(168, 85, 247, 0.9);
+}
+
+.ai-gradient {
+    box-shadow: 0 15px 40px rgba(168, 85, 247, 0.3);
+}
+
+.ai-gradient-bg {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.2) 0%, rgba(139, 92, 246, 0.2) 50%, rgba(236, 72, 153, 0.2) 100%);
+}
+
+.ai-title {
+    color: #a78bfa !important;
+    text-shadow: 0 0 10px rgba(167, 139, 250, 0.4);
+}
+
+.project-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 3rem;
+    align-items: start;
+}
+
+.project-image-container {
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(107, 182, 255, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.project-image-container:hover {
+    transform: scale(1.02);
+}
+
+.project-gradient-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(59, 130, 246, 0.2) 50%, rgba(236, 72, 153, 0.2) 100%);
+    z-index: 1;
+}
+
+.project-screenshot {
+    width: 100%;
+    height: auto;
+    display: block;
+    position: relative;
+    z-index: 2;
+    border-radius: 15px;
+}
+
+.project-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.project-details h3 {
+    font-size: 2rem;
+    margin: 0;
+}
+
+.project-description {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.tech-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 2px solid;
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+.tech-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.tech-badge.html {
+    background: linear-gradient(135deg, #e34c26 0%, #f06529 100%);
+    color: white;
+    border-color: #e34c26;
+    box-shadow: 0 2px 10px rgba(227, 76, 38, 0.3);
+}
+
+.tech-badge.css {
+    background: linear-gradient(135deg, #264de4 0%, #2965f1 100%);
+    color: white;
+    border-color: #264de4;
+    box-shadow: 0 2px 10px rgba(38, 77, 228, 0.3);
+}
+
+.tech-badge.js {
+    background: linear-gradient(135deg, #f0db4f 0%, #f7df1e 100%);
+    color: #323330;
+    border-color: #f0db4f;
+    box-shadow: 0 2px 10px rgba(240, 219, 79, 0.3);
+    font-weight: 700;
+}
+
+.tech-badge.git {
+    background: linear-gradient(135deg, #f05032 0%, #f14e32 100%);
+    color: white;
+    border-color: #f05032;
+    box-shadow: 0 2px 10px rgba(240, 80, 50, 0.3);
+}
+
+.tech-badge.responsive {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    color: white;
+    border-color: #06b6d4;
+    box-shadow: 0 2px 10px rgba(6, 182, 212, 0.3);
+}
+
+.tech-badge.animations {
+    background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+    color: white;
+    border-color: #a855f7;
+    box-shadow: 0 2px 10px rgba(168, 85, 247, 0.3);
+}
+
+.tech-badge.python {
+    background: linear-gradient(135deg, #3776ab 0%, #306998 100%);
+    color: white;
+    border-color: #3776ab;
+    box-shadow: 0 2px 10px rgba(55, 118, 171, 0.3);
+}
+
+.tech-badge.streamlit {
+    background: linear-gradient(135deg, #ff4b4b 0%, #ff2e2e 100%);
+    color: white;
+    border-color: #ff4b4b;
+    box-shadow: 0 2px 10px rgba(255, 75, 75, 0.3);
+}
+
+.tech-badge.groq {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+    border-color: #8b5cf6;
+    box-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+}
+
+.tech-badge.git-ai {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border-color: #10b981;
+    box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+}
+
+.tech-badge.streamlit-cloud {
+    background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+    color: white;
+    border-color: #ec4899;
+    box-shadow: 0 2px 10px rgba(236, 72, 153, 0.3);
+}
+
+.project-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.project-btn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    border: 2px solid;
+}
+
+.repo-btn {
+    background: linear-gradient(135deg, #24292e 0%, #1a1e22 100%);
+    color: white;
+    border-color: #24292e;
+    box-shadow: 0 4px 15px rgba(36, 41, 46, 0.3);
+}
+
+.repo-btn:hover {
+    background: linear-gradient(135deg, #2f363d 0%, #24292e 100%);
+    box-shadow: 0 6px 20px rgba(36, 41, 46, 0.5);
+    transform: translateY(-2px);
+}
+
+.github-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.live-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border-color: #10b981;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.live-btn:hover {
+    background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+    transform: translateY(-2px);
+}
+
+.ai-live-btn {
+    background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+    color: white;
+    border-color: #8b5cf6;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.ai-live-btn:hover {
+    background: linear-gradient(135deg, #a78bfa 0%, #f472b6 100%);
+    box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 968px) {
+    .project-layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .project-image-container {
+        order: -1;
+    }
+}
+
 .contact {
     background: linear-gradient(135deg, #001122 0%, #0d1b2a 50%, #1e3a5f 100%);
     text-align: center;

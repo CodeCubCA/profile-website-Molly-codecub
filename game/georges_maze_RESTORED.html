@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🎮 FREAKY GAMES 🎮</title>
     <style>
         body {
@@ -234,6 +235,105 @@
             width: 100%;
             display: none;
         }
+
+        /* Mobile Controls */
+        .mobile-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .control-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 70px);
+            grid-template-rows: repeat(3, 70px);
+            gap: 5px;
+        }
+
+        .control-btn {
+            background: rgba(0, 255, 65, 0.3);
+            border: 2px solid #00ff41;
+            color: #00ff41;
+            font-size: 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+            transition: all 0.1s;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .control-btn:active {
+            background: rgba(0, 255, 65, 0.6);
+            transform: scale(0.95);
+        }
+
+        .control-btn.up { grid-column: 2; grid-row: 1; }
+        .control-btn.left { grid-column: 1; grid-row: 2; }
+        .control-btn.right { grid-column: 3; grid-row: 2; }
+        .control-btn.down { grid-column: 2; grid-row: 3; }
+
+        /* Exit Button */
+        .exit-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff0066;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(255, 0, 102, 0.5);
+            z-index: 1001;
+            display: none;
+        }
+
+        .exit-button:hover {
+            background: #cc0052;
+            transform: scale(1.05);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .big-button {
+                padding: 20px 30px;
+                font-size: 20px;
+                margin: 10px;
+            }
+
+            canvas {
+                max-width: 100%;
+                height: auto !important;
+            }
+
+            .mobile-controls {
+                display: flex;
+            }
+
+            .back-button, .exit-button {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .game-card {
+                padding: 15px;
+            }
+
+            .game-title {
+                font-size: 1.4rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -441,6 +541,17 @@
     <!-- GAME AREA -->
     <canvas id="gameCanvas" width="800" height="600"></canvas>
     <button class="back-button" id="backButton" onclick="backToMenu()" style="display: none;">← Back to Games</button>
+    <button class="exit-button" id="exitButton" onclick="exitGame()">✕ Exit Game</button>
+
+    <!-- Mobile Controls -->
+    <div class="mobile-controls" id="mobileControls">
+        <div class="control-pad">
+            <button class="control-btn up" ontouchstart="handleTouch('up')" ontouchend="handleTouchEnd()">▲</button>
+            <button class="control-btn left" ontouchstart="handleTouch('left')" ontouchend="handleTouchEnd()">◄</button>
+            <button class="control-btn right" ontouchstart="handleTouch('right')" ontouchend="handleTouchEnd()">►</button>
+            <button class="control-btn down" ontouchstart="handleTouch('down')" ontouchend="handleTouchEnd()">▼</button>
+        </div>
+    </div>
 
     <!-- MAZE PREVIEW -->
     <div class="maze-preview" id="mazePreview">
@@ -462,6 +573,8 @@
             document.getElementById('mazeLevelSelection').style.display = 'none';
             document.getElementById('gameCanvas').style.display = 'none';
             document.getElementById('backButton').style.display = 'none';
+            document.getElementById('exitButton').style.display = 'none';
+            document.getElementById('mobileControls').style.display = 'none';
             document.getElementById('gameUI').style.display = 'none';
             document.getElementById('mazePreview').style.display = 'none';
         }
@@ -494,6 +607,7 @@
             document.getElementById('mazeLevelSelection').style.display = 'none';
             document.getElementById('gameCanvas').style.display = 'block';
             document.getElementById('backButton').style.display = 'block';
+            document.getElementById('exitButton').style.display = 'block';
             document.getElementById('gameUI').style.display = 'block';
             document.getElementById('mazePreview').style.display = 'block';
             createMazePreview();
@@ -503,6 +617,56 @@
             showGameSelection();
             gameRunning = false;
             stopBackgroundMusic();
+        }
+
+        // Exit Game Function
+        function exitGame() {
+            if (confirm('Are you sure you want to exit the game?')) {
+                window.close();
+                // If window.close() doesn't work (browser restrictions), go back to portfolio
+                setTimeout(() => {
+                    window.location.href = '../index.html';
+                }, 100);
+            }
+        }
+
+        // Mobile Touch Controls
+        let currentDirection = null;
+
+        function handleTouch(direction) {
+            event.preventDefault();
+            currentDirection = direction;
+
+            // Simulate key press
+            const keyMap = {
+                'up': 'w',
+                'down': 's',
+                'left': 'a',
+                'right': 'd'
+            };
+
+            if (keyMap[direction]) {
+                keys[keyMap[direction]] = true;
+            }
+        }
+
+        function handleTouchEnd() {
+            event.preventDefault();
+
+            // Release all keys
+            if (currentDirection) {
+                const keyMap = {
+                    'up': 'w',
+                    'down': 's',
+                    'left': 'a',
+                    'right': 'd'
+                };
+
+                if (keyMap[currentDirection]) {
+                    keys[keyMap[currentDirection]] = false;
+                }
+                currentDirection = null;
+            }
         }
 
         function start2DGame() {

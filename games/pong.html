@@ -61,7 +61,7 @@
             <button id="startBtn" onclick="startGame()">Start Game</button>
         </div>
         <div class="instructions">
-            Desktop: Mouse • Mobile: Touch the area below
+            Desktop: W/S or ↑↓ Arrow Keys • Mobile: Touch the area below
         </div>
         <div class="mobile-touch-area" id="touchArea">Touch Here to Move Paddle</div>
     </div>
@@ -74,23 +74,28 @@
         let computerY = canvas.height / 2 - PADDLE_HEIGHT / 2;
         let ballX = canvas.width / 2, ballY = canvas.height / 2;
         let ballSpeedX = 5, ballSpeedY = 3;
-        let playerScore = 0, computerScore = 0, gameRunning = false, gameLoop = null, mouseY = canvas.height / 2;
+        let playerScore = 0, computerScore = 0, gameRunning = false, gameLoop = null;
+        let keys = {};
+        let touchY = canvas.height / 2;
 
         function exitGame() {
             if (confirm('Exit game and return to portfolio?')) window.location.href = '../index.html';
         }
 
-        canvas.addEventListener('mousemove', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            mouseY = e.clientY - rect.top;
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            keys[e.key.toLowerCase()] = true;
+        });
+
+        document.addEventListener('keyup', (e) => {
+            keys[e.key.toLowerCase()] = false;
         });
 
         touchArea.addEventListener('touchmove', (e) => {
             e.preventDefault();
             const touch = e.touches[0];
             const rect = touchArea.getBoundingClientRect();
-            const touchY = touch.clientY - rect.top;
-            mouseY = (touchY / rect.height) * canvas.height;
+            touchY = (touch.clientY - rect.top) / rect.height * canvas.height;
         });
 
         function startGame() {
@@ -122,9 +127,21 @@
             ballX += ballSpeedX; ballY += ballSpeedY;
             if (ballY <= 0 || ballY >= canvas.height) ballSpeedY = -ballSpeedY;
 
-            const paddleCenter = playerY + PADDLE_HEIGHT / 2;
-            if (mouseY < paddleCenter) playerY -= 8;
-            else if (mouseY > paddleCenter) playerY += 8;
+            // Keyboard controls: W/S and Arrow Up/Down
+            if (keys['w'] || keys['arrowup']) {
+                playerY -= 8;
+            }
+            if (keys['s'] || keys['arrowdown']) {
+                playerY += 8;
+            }
+
+            // Mobile touch controls
+            if (touchY !== canvas.height / 2) {
+                const paddleCenter = playerY + PADDLE_HEIGHT / 2;
+                if (touchY < paddleCenter) playerY -= 8;
+                else if (touchY > paddleCenter) playerY += 8;
+            }
+
             playerY = Math.max(0, Math.min(canvas.height - PADDLE_HEIGHT, playerY));
 
             const computerCenter = computerY + PADDLE_HEIGHT / 2;

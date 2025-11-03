@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Block Tetris - Molly's Arcade</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d1b2a 0%, #1e3a5f 50%, #0d1b2a 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow: hidden;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #6bb6ff;
+            text-shadow: 0 0 10px rgba(107, 182, 255, 0.5);
+        }
+        .game-container {
+            background: rgba(30, 58, 95, 0.5);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #6bb6ff;
+            box-shadow: 0 10px 30px rgba(107, 182, 255, 0.3);
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: relative;
+        }
+        canvas {
+            border: 2px solid #4a90e2;
+            background: #0a1628;
+            display: block;
+        }
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .score-panel {
+            background: rgba(13, 27, 42, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #4a90e2;
+        }
+        .score {
+            font-size: 1.2rem;
+            margin: 8px 0;
+            color: #6bb6ff;
+        }
+        button {
+            background: linear-gradient(45deg, #6bb6ff, #4a90e2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(107, 182, 255, 0.5);
+        }
+        .exit-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff0066;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            z-index: 100;
+        }
+        .exit-button:hover {
+            background: #cc0052;
+        }
+        .instructions {
+            font-size: 0.85rem;
+            color: #e0e0e0;
+            text-align: center;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+        .mobile-controls {
+            display: none;
+            margin-top: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .control-row {
+            display: flex;
+            gap: 10px;
+        }
+        .control-btn {
+            background: rgba(107, 182, 255, 0.3);
+            border: 2px solid #6bb6ff;
+            color: #6bb6ff;
+            font-size: 18px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .control-btn:active {
+            background: rgba(107, 182, 255, 0.6);
+            transform: scale(0.95);
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            canvas { max-width: 300px; }
+            .mobile-controls { display: flex; }
+        }
+    </style>
+</head>
+<body>
+    <h1>🟦 Block Tetris</h1>
+    <div class="game-container">
+        <button class="exit-button" onclick="exitGame()">✕ Exit</button>
+        <canvas id="gameCanvas" width="300" height="600"></canvas>
+        <div class="side-panel">
+            <div class="score-panel">
+                <div class="score">Score: <span id="score">0</span></div>
+                <div class="score">Level: <span id="level">1</span></div>
+                <div class="score">Lines: <span id="lines">0</span></div>
+            </div>
+            <button id="startBtn" onclick="toggleGame()">Start Game</button>
+            <div class="instructions">
+                Desktop: ← → Move, ↓ Drop, ↑ Rotate<br>
+                Mobile: Use buttons below
+            </div>
+        </div>
+    </div>
+    <div class="mobile-controls">
+        <div class="control-row">
+            <button class="control-btn" ontouchstart="handleTouch('left')" ontouchend="handleTouchEnd()">◄</button>
+            <button class="control-btn" ontouchstart="handleTouch('rotate')" ontouchend="handleTouchEnd()">↻</button>
+            <button class="control-btn" ontouchstart="handleTouch('right')" ontouchend="handleTouchEnd()">►</button>
+        </div>
+        <div class="control-row">
+            <button class="control-btn" ontouchstart="handleTouch('down')" ontouchend="handleTouchEnd()">↓ Drop</button>
+        </div>
+    </div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const ROWS = 20, COLS = 10, BLOCK_SIZE = 30;
+        const COLORS = ['#00f', '#0f0', '#f00', '#ff0', '#f0f', '#0ff', '#f80'];
+        const SHAPES = [
+            [[1,1,1,1]], [[1,1],[1,1]], [[1,1,1],[0,1,0]], [[1,1,1],[1,0,0]],
+            [[1,1,1],[0,0,1]], [[1,1,0],[0,1,1]], [[0,1,1],[1,1,0]]
+        ];
+        let board = Array(ROWS).fill().map(() => Array(COLS).fill(0));
+        let currentPiece = null, currentX = 0, currentY = 0, currentColor = 0;
+        let score = 0, level = 1, lines = 0, gameLoop = null, gameRunning = false, dropInterval = 1000;
+
+        function exitGame() {
+            if (confirm('Exit game and return to portfolio?')) {
+                window.location.href = '../index.html';
+            }
+        }
+
+        function newPiece() {
+            const shapeIndex = Math.floor(Math.random() * SHAPES.length);
+            currentPiece = SHAPES[shapeIndex];
+            currentColor = shapeIndex;
+            currentX = Math.floor(COLS / 2) - Math.floor(currentPiece[0].length / 2);
+            currentY = 0;
+            if (collision()) gameOver();
+        }
+
+        function collision() {
+            for (let y = 0; y < currentPiece.length; y++) {
+                for (let x = 0; x < currentPiece[y].length; x++) {
+                    if (currentPiece[y][x]) {
+                        const boardX = currentX + x, boardY = currentY + y;
+                        if (boardX < 0 || boardX >= COLS || boardY >= ROWS || (boardY >= 0 && board[boardY][boardX])) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        function merge() {
+            for (let y = 0; y < currentPiece.length; y++) {
+                for (let x = 0; x < currentPiece[y].length; x++) {
+                    if (currentPiece[y][x]) board[currentY + y][currentX + x] = currentColor + 1;
+                }
+            }
+        }
+
+        function rotate() {
+            const rotated = currentPiece[0].map((_, i) => currentPiece.map(row => row[i]).reverse());
+            const prevPiece = currentPiece;
+            currentPiece = rotated;
+            if (collision()) currentPiece = prevPiece;
+        }
+
+        function clearLines() {
+            let linesCleared = 0;
+            for (let y = ROWS - 1; y >= 0; y--) {
+                if (board[y].every(cell => cell !== 0)) {
+                    board.splice(y, 1);
+                    board.unshift(Array(COLS).fill(0));
+                    linesCleared++;
+                    y++;
+                }
+            }
+            if (linesCleared > 0) {
+                lines += linesCleared;
+                score += linesCleared * 100 * level;
+                level = Math.floor(lines / 10) + 1;
+                dropInterval = Math.max(100, 1000 - (level - 1) * 100);
+                document.getElementById('lines').textContent = lines;
+                document.getElementById('level').textContent = level;
+                document.getElementById('score').textContent = score;
+            }
+        }
+
+        function moveDown() {
+            currentY++;
+            if (collision()) {
+                currentY--;
+                merge();
+                clearLines();
+                newPiece();
+            }
+        }
+
+        function moveLeft() {
+            currentX--;
+            if (collision()) currentX++;
+        }
+
+        function moveRight() {
+            currentX++;
+            if (collision()) currentX--;
+        }
+
+        function draw() {
+            ctx.fillStyle = '#0a1628';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            for (let y = 0; y < ROWS; y++) {
+                for (let x = 0; x < COLS; x++) {
+                    if (board[y][x]) {
+                        ctx.fillStyle = COLORS[board[y][x] - 1];
+                        ctx.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE - 1, BLOCK_SIZE - 1);
+                    }
+                }
+            }
+            if (currentPiece) {
+                ctx.fillStyle = COLORS[currentColor];
+                for (let y = 0; y < currentPiece.length; y++) {
+                    for (let x = 0; x < currentPiece[y].length; x++) {
+                        if (currentPiece[y][x]) {
+                            ctx.fillRect((currentX + x) * BLOCK_SIZE, (currentY + y) * BLOCK_SIZE,
+                                       BLOCK_SIZE - 1, BLOCK_SIZE - 1);
+                        }
+                    }
+                }
+            }
+        }
+
+        function toggleGame() {
+            if (!gameRunning) startGame();
+            else resetGame();
+        }
+
+        function startGame() {
+            board = Array(ROWS).fill().map(() => Array(COLS).fill(0));
+            score = 0; level = 1; lines = 0; dropInterval = 1000;
+            document.getElementById('score').textContent = score;
+            document.getElementById('level').textContent = level;
+            document.getElementById('lines').textContent = lines;
+            newPiece();
+            gameRunning = true;
+            document.getElementById('startBtn').textContent = 'Reset Game';
+            let lastTime = 0;
+            function gameStep(timestamp) {
+                if (!gameRunning) return;
+                if (timestamp - lastTime > dropInterval) {
+                    moveDown();
+                    lastTime = timestamp;
+                }
+                draw();
+                gameLoop = requestAnimationFrame(gameStep);
+            }
+            gameLoop = requestAnimationFrame(gameStep);
+        }
+
+        function resetGame() {
+            gameRunning = false;
+            cancelAnimationFrame(gameLoop);
+            document.getElementById('startBtn').textContent = 'Start Game';
+            board = Array(ROWS).fill().map(() => Array(COLS).fill(0));
+            currentPiece = null;
+            draw();
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            cancelAnimationFrame(gameLoop);
+            document.getElementById('startBtn').textContent = 'Play Again';
+            alert('Game Over! Final Score: ' + score);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (!gameRunning) return;
+            if (e.key === 'ArrowLeft') moveLeft();
+            else if (e.key === 'ArrowRight') moveRight();
+            else if (e.key === 'ArrowDown') moveDown();
+            else if (e.key === 'ArrowUp') rotate();
+            draw();
+        });
+
+        function handleTouch(action) {
+            event.preventDefault();
+            if (!gameRunning) return;
+            if (action === 'left') moveLeft();
+            else if (action === 'right') moveRight();
+            else if (action === 'down') moveDown();
+            else if (action === 'rotate') rotate();
+            draw();
+        }
+
+        function handleTouchEnd() {
+            event.preventDefault();
+        }
+
+        draw();
+    </script>
+</body>
+</html>

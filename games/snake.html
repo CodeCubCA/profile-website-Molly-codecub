@@ -270,7 +270,7 @@
                 generateFood();
                 gameRunning = true;
                 startBtn.textContent = 'Restart';
-                gameLoop = setInterval(update, 150); // Slower: 150ms instead of 100ms
+                gameLoop = setInterval(update, 200); // Even slower: 200ms for better control
             } else {
                 clearInterval(gameLoop);
                 gameRunning = false;
@@ -297,8 +297,9 @@
             }
 
             // Check self collision (skip if snake is length 1)
+            // Start from index 1 to skip checking the head against itself
             if (snake.length > 1) {
-                for (let i = 0; i < snake.length; i++) {
+                for (let i = 1; i < snake.length; i++) {
                     if (head.x === snake[i].x && head.y === snake[i].y) {
                         gameOver();
                         return;

@@ -284,10 +284,10 @@
                     {x: 9, y: 10},
                     {x: 8, y: 10}
                 ];
-                dx = 0;
+                dx = 1;  // Start moving right automatically
                 dy = 0;
                 score = 0;
-                gameStarted = false;
+                gameStarted = true;  // Game starts immediately
                 scoreElement.textContent = score;
                 generateFood();
                 gameRunning = true;

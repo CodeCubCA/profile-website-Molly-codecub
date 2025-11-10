@@ -112,8 +112,8 @@
             <button id="startBtn" onclick="startGame()">Start Game</button>
         </div>
         <div class="instructions">
-            Desktop: Arrow Keys to Move | Space to Shoot<br>
-            Destroy alien invaders and survive!
+            Desktop: Arrow Keys or WASD to Move | Space to Shoot<br>
+            Move freely and destroy alien invaders!
         </div>
         <div class="mobile-controls">
             <div class="control-row">
@@ -293,17 +293,17 @@
                 }
             });
 
-            // Player movement
-            if ((keys['ArrowLeft'] || mobileAction === 'left') && player.x > 0) {
+            // Player movement (Arrow keys or WASD)
+            if ((keys['ArrowLeft'] || keys['a'] || keys['A'] || mobileAction === 'left') && player.x > 0) {
                 player.x -= player.speed;
             }
-            if ((keys['ArrowRight'] || mobileAction === 'right') && player.x < canvas.width - player.width) {
+            if ((keys['ArrowRight'] || keys['d'] || keys['D'] || mobileAction === 'right') && player.x < canvas.width - player.width) {
                 player.x += player.speed;
             }
-            if ((keys['ArrowUp'] || mobileAction === 'up') && player.y > canvas.height / 2) {
+            if ((keys['ArrowUp'] || keys['w'] || keys['W'] || mobileAction === 'up') && player.y > 0) {
                 player.y -= player.speed;
             }
-            if ((keys['ArrowDown'] || mobileAction === 'down') && player.y < canvas.height - player.height) {
+            if ((keys['ArrowDown'] || keys['s'] || keys['S'] || mobileAction === 'down') && player.y < canvas.height - player.height) {
                 player.y += player.speed;
             }
 

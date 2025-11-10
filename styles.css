@@ -717,13 +717,13 @@ section {
     z-index: 1;
     overflow: hidden;
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 240px 1fr;
     gap: 0;
 }
 
 .project-image {
     position: relative;
-    width: 280px;
+    width: 240px;
     height: 280px;
     overflow: hidden;
     display: flex;
@@ -750,7 +750,7 @@ section {
 }
 
 .project-content {
-    padding: 1.5rem;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;

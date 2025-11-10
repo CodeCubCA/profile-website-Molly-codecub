@@ -411,8 +411,8 @@
 
         // Draw game
         function draw() {
-            // Clear canvas
-            ctx.fillStyle = 'rgba(0, 8, 20, 0.3)';
+            // Clear canvas with solid background
+            ctx.fillStyle = '#000814';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Draw stars
@@ -494,6 +494,18 @@
                 ctx.fill();
             });
             ctx.globalAlpha = 1;
+
+            // Draw "Press Start" message if game not running
+            if (!gameRunning) {
+                ctx.fillStyle = '#6bb6ff';
+                ctx.font = 'bold 24px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Press "Start Game" to Begin!', canvas.width / 2, canvas.height / 2 - 50);
+                ctx.font = '18px Arial';
+                ctx.fillStyle = '#e0e0e0';
+                ctx.fillText('Use Arrow Keys or WASD to Move', canvas.width / 2, canvas.height / 2);
+                ctx.fillText('Press SPACE to Shoot', canvas.width / 2, canvas.height / 2 + 30);
+            }
         }
 
         // Game loop

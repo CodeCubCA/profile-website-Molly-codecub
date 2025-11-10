@@ -1454,6 +1454,34 @@ section {
     font-size: 1rem;
 }
 
+.game-button {
+    background: linear-gradient(135deg, #6bb6ff 0%, #4a90e2 100%);
+    color: white;
+    border: 2px solid #6bb6ff;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(107, 182, 255, 0.3);
+    width: 100%;
+}
+
+.game-button:hover {
+    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(107, 182, 255, 0.5);
+    border-color: #fff;
+}
+
+.game-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(107, 182, 255, 0.4);
+}
+
 .game-placeholder {
     background: linear-gradient(135deg, #6bb6ff 0%, #4a90e2 50%, #0d1b2a 100%);
     border-radius: 15px;

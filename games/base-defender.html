@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zombie Base Defense - Molly's Arcade</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html {
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a0f0f 0%, #2d1414 50%, #1a0f0f 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #ff4444;
+            text-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+        }
+        .game-container {
+            background: rgba(45, 20, 20, 0.5);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #ff4444;
+            box-shadow: 0 10px 30px rgba(255, 68, 68, 0.3);
+            position: relative;
+        }
+        canvas {
+            border: 2px solid #8b0000;
+            background: linear-gradient(180deg, #2a1515 0%, #1a0a0a 100%);
+            display: block;
+            max-width: 100%;
+            cursor: crosshair;
+        }
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .stats {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        .stat {
+            font-size: 1.2rem;
+            color: #ff4444;
+            background: rgba(139, 0, 0, 0.3);
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: 1px solid #ff4444;
+        }
+        button {
+            background: linear-gradient(45deg, #ff4444, #cc0000);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255, 68, 68, 0.5); }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        .exit-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff0066;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            z-index: 100;
+        }
+        .exit-button:hover { background: #cc0052; }
+        .instructions {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #e0e0e0;
+            text-align: center;
+        }
+        .tower-shop {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .tower-btn {
+            background: rgba(139, 0, 0, 0.5);
+            border: 2px solid #ff4444;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+        .tower-btn.selected {
+            background: rgba(255, 68, 68, 0.7);
+            border-color: #ffaa00;
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            canvas { width: 100% !important; height: auto !important; }
+        }
+    </style>
+</head>
+<body>
+    <h1>🧟 Zombie Base Defense</h1>
+    <div class="game-container">
+        <button class="exit-button" onclick="exitGame()">✕ Exit</button>
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div class="controls">
+            <div class="stats">
+                <div class="stat">💰 Gold: <span id="gold">100</span></div>
+                <div class="stat">❤️ Base HP: <span id="baseHP">100</span></div>
+                <div class="stat">🧟 Wave: <span id="wave">1</span></div>
+                <div class="stat">👹 Zombies: <span id="zombies">0</span></div>
+            </div>
+            <button id="startBtn" onclick="startWave()">Start Wave 1</button>
+        </div>
+        <div class="tower-shop">
+            <button class="tower-btn" onclick="selectTower('gun')" id="gunBtn">🔫 Gun Tower (💰50)</button>
+            <button class="tower-btn" onclick="selectTower('cannon')" id="cannonBtn">💣 Cannon (💰100)</button>
+            <button class="tower-btn" onclick="selectTower('laser')" id="laserBtn">⚡ Laser (💰150)</button>
+            <button class="tower-btn" onclick="selectTower('upgrade')" id="upgradeBtn">⬆️ Upgrade (💰75)</button>
+        </div>
+        <div class="instructions">
+            Click on the field to place towers • Defend your base from zombies!<br>
+            Earn gold from killing zombies • Upgrade towers for more power
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Game state
+        let gameRunning = false;
+        let gold = 100;
+        let baseHP = 100;
+        let wave = 1;
+        let selectedTower = null;
+        let placementMode = false;
+
+        // Arrays
+        let towers = [];
+        let zombies = [];
+        let bullets = [];
+        let particles = [];
+
+        // Base position (right side)
+        const base = {
+            x: canvas.width - 60,
+            y: canvas.height / 2,
+            width: 50,
+            height: 100
+        };
+
+        // Tower types
+        const towerTypes = {
+            gun: { cost: 50, damage: 10, range: 150, fireRate: 30, color: '#6bb6ff', name: 'Gun' },
+            cannon: { cost: 100, damage: 30, range: 120, fireRate: 60, color: '#ff8800', name: 'Cannon' },
+            laser: { cost: 150, damage: 5, range: 200, fireRate: 5, color: '#00ff88', name: 'Laser' }
+        };
+
+        // Exit game
+        function exitGame() {
+            if (confirm('Exit game and return to portfolio?')) {
+                window.location.href = '../index.html';
+            }
+        }
+
+        // Select tower type
+        function selectTower(type) {
+            if (type === 'upgrade') {
+                selectedTower = 'upgrade';
+                placementMode = true;
+                updateTowerButtons();
+                return;
+            }
+
+            if (gold >= towerTypes[type].cost) {
+                selectedTower = type;
+                placementMode = true;
+                updateTowerButtons();
+            }
+        }
+
+        // Update tower button states
+        function updateTowerButtons() {
+            document.getElementById('gunBtn').classList.remove('selected');
+            document.getElementById('cannonBtn').classList.remove('selected');
+            document.getElementById('laserBtn').classList.remove('selected');
+            document.getElementById('upgradeBtn').classList.remove('selected');
+
+            if (selectedTower === 'gun') document.getElementById('gunBtn').classList.add('selected');
+            if (selectedTower === 'cannon') document.getElementById('cannonBtn').classList.add('selected');
+            if (selectedTower === 'laser') document.getElementById('laserBtn').classList.add('selected');
+            if (selectedTower === 'upgrade') document.getElementById('upgradeBtn').classList.add('selected');
+
+            // Enable/disable based on gold
+            document.getElementById('gunBtn').disabled = gold < 50;
+            document.getElementById('cannonBtn').disabled = gold < 100;
+            document.getElementById('laserBtn').disabled = gold < 150;
+        }
+
+        // Canvas click handler
+        canvas.addEventListener('click', (e) => {
+            if (!placementMode || !selectedTower) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            // Check if click is in valid placement area (left 2/3 of screen)
+            if (x > canvas.width * 0.7) {
+                return;
+            }
+
+            if (selectedTower === 'upgrade') {
+                // Find tower to upgrade
+                for (let tower of towers) {
+                    const dist = Math.hypot(tower.x - x, tower.y - y);
+                    if (dist < 20 && gold >= 75) {
+                        gold -= 75;
+                        tower.level++;
+                        tower.damage *= 1.5;
+                        tower.range *= 1.1;
+                        updateUI();
+                        createParticles(tower.x, tower.y, '#ffaa00', 10);
+                        break;
+                    }
+                }
+                placementMode = false;
+                selectedTower = null;
+                updateTowerButtons();
+                return;
+            }
+
+            // Place new tower
+            const towerData = towerTypes[selectedTower];
+            if (gold >= towerData.cost) {
+                // Check if not overlapping with other towers
+                let canPlace = true;
+                for (let tower of towers) {
+                    const dist = Math.hypot(tower.x - x, tower.y - y);
+                    if (dist < 40) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                if (canPlace) {
+                    towers.push({
+                        x: x,
+                        y: y,
+                        type: selectedTower,
+                        damage: towerData.damage,
+                        range: towerData.range,
+                        fireRate: towerData.fireRate,
+                        fireTimer: 0,
+                        color: towerData.color,
+                        level: 1,
+                        target: null
+                    });
+                    gold -= towerData.cost;
+                    updateUI();
+                    createParticles(x, y, towerData.color, 5);
+                }
+            }
+
+            placementMode = false;
+            selectedTower = null;
+            updateTowerButtons();
+        });
+
+        // Start wave
+        function startWave() {
+            if (gameRunning) return;
+            gameRunning = true;
+            document.getElementById('startBtn').textContent = 'Wave in Progress...';
+            document.getElementById('startBtn').disabled = true;
+            spawnWave();
+        }
+
+        // Spawn zombies
+        function spawnWave() {
+            const zombieCount = 5 + wave * 3;
+            let spawned = 0;
+
+            const spawnInterval = setInterval(() => {
+                if (spawned >= zombieCount) {
+                    clearInterval(spawnInterval);
+                    return;
+                }
+
+                // Random y position
+                const y = Math.random() * (canvas.height - 40) + 20;
+                zombies.push({
+                    x: -30,
+                    y: y,
+                    width: 25,
+                    height: 35,
+                    hp: 20 + wave * 10,
+                    maxHP: 20 + wave * 10,
+                    speed: 0.5 + wave * 0.1,
+                    gold: 10 + wave * 2
+                });
+                spawned++;
+            }, 1000);
+        }
+
+        // Create particle effects
+        function createParticles(x, y, color, count) {
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: (Math.random() - 0.5) * 4,
+                    life: 30,
+                    color: color
+                });
+            }
+        }
+
+        // Update game
+        function update() {
+            // Update zombies
+            zombies.forEach((zombie, zIndex) => {
+                zombie.x += zombie.speed;
+
+                // Check if reached base
+                if (zombie.x + zombie.width >= base.x) {
+                    baseHP -= 10;
+                    zombies.splice(zIndex, 1);
+                    updateUI();
+                    if (baseHP <= 0) {
+                        gameOver();
+                    }
+                }
+            });
+
+            // Update towers
+            towers.forEach(tower => {
+                tower.fireTimer++;
+
+                // Find nearest zombie in range
+                tower.target = null;
+                let nearestDist = tower.range;
+
+                zombies.forEach(zombie => {
+                    const dist = Math.hypot(zombie.x - tower.x, zombie.y - tower.y);
+                    if (dist < nearestDist) {
+                        nearestDist = dist;
+                        tower.target = zombie;
+                    }
+                });
+
+                // Fire at target
+                if (tower.target && tower.fireTimer >= tower.fireRate) {
+                    tower.fireTimer = 0;
+                    const angle = Math.atan2(tower.target.y - tower.y, tower.target.x - tower.x);
+                    bullets.push({
+                        x: tower.x,
+                        y: tower.y,
+                        vx: Math.cos(angle) * 6,
+                        vy: Math.sin(angle) * 6,
+                        damage: tower.damage,
+                        color: tower.color,
+                        type: tower.type
+                    });
+                }
+            });
+
+            // Update bullets
+            bullets = bullets.filter(bullet => {
+                bullet.x += bullet.vx;
+                bullet.y += bullet.vy;
+
+                // Check collision with zombies
+                for (let i = zombies.length - 1; i >= 0; i--) {
+                    const zombie = zombies[i];
+                    if (bullet.x > zombie.x && bullet.x < zombie.x + zombie.width &&
+                        bullet.y > zombie.y && bullet.y < zombie.y + zombie.height) {
+
+                        zombie.hp -= bullet.damage;
+                        createParticles(bullet.x, bullet.y, '#ff0000', 3);
+
+                        if (zombie.hp <= 0) {
+                            gold += zombie.gold;
+                            zombies.splice(i, 1);
+                            createParticles(zombie.x + zombie.width/2, zombie.y + zombie.height/2, '#00ff00', 8);
+                            updateUI();
+                        }
+                        return false;
+                    }
+                }
+
+                return bullet.x > 0 && bullet.x < canvas.width && bullet.y > 0 && bullet.y < canvas.height;
+            });
+
+            // Update particles
+            particles = particles.filter(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life--;
+                return p.life > 0;
+            });
+
+            // Check if wave complete
+            if (gameRunning && zombies.length === 0) {
+                setTimeout(() => {
+                    wave++;
+                    gameRunning = false;
+                    document.getElementById('startBtn').textContent = `Start Wave ${wave}`;
+                    document.getElementById('startBtn').disabled = false;
+                    updateUI();
+                }, 1000);
+            }
+
+            updateUI();
+        }
+
+        // Draw game
+        function draw() {
+            // Clear canvas
+            ctx.fillStyle = '#1a0a0a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw path
+            ctx.fillStyle = '#2a1515';
+            ctx.fillRect(0, 0, canvas.width - 100, canvas.height);
+
+            // Draw base
+            ctx.fillStyle = '#4a4a4a';
+            ctx.fillRect(base.x, base.y, base.width, base.height);
+            ctx.fillStyle = '#ff4444';
+            ctx.fillRect(base.x + 5, base.y + 5, base.width - 10, 10);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('BASE', base.x + base.width/2, base.y + base.height/2);
+
+            // Draw towers
+            towers.forEach(tower => {
+                // Range circle
+                ctx.strokeStyle = tower.color + '22';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(tower.x, tower.y, tower.range, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Tower body
+                ctx.fillStyle = tower.color;
+                ctx.beginPath();
+                ctx.arc(tower.x, tower.y, 15, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Tower level indicator
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 10px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(tower.level, tower.x, tower.y + 4);
+
+                // Aim at target
+                if (tower.target) {
+                    ctx.strokeStyle = tower.color;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(tower.x, tower.y);
+                    ctx.lineTo(tower.target.x + tower.target.width/2, tower.target.y + tower.target.height/2);
+                    ctx.stroke();
+                }
+            });
+
+            // Draw zombies
+            zombies.forEach(zombie => {
+                // Zombie body (green)
+                ctx.fillStyle = '#44aa44';
+                ctx.fillRect(zombie.x, zombie.y, zombie.width, zombie.height);
+
+                // Zombie face
+                ctx.fillStyle = '#88cc88';
+                ctx.fillRect(zombie.x + 5, zombie.y + 5, zombie.width - 10, 15);
+
+                // Eyes
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(zombie.x + 7, zombie.y + 8, 3, 3);
+                ctx.fillRect(zombie.x + zombie.width - 10, zombie.y + 8, 3, 3);
+
+                // HP bar
+                const hpPercent = zombie.hp / zombie.maxHP;
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(zombie.x, zombie.y - 8, zombie.width, 4);
+                ctx.fillStyle = '#00ff00';
+                ctx.fillRect(zombie.x, zombie.y - 8, zombie.width * hpPercent, 4);
+            });
+
+            // Draw bullets
+            bullets.forEach(bullet => {
+                ctx.fillStyle = bullet.color;
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = bullet.color;
+                ctx.beginPath();
+                ctx.arc(bullet.x, bullet.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.shadowBlur = 0;
+
+            // Draw particles
+            particles.forEach(p => {
+                ctx.globalAlpha = p.life / 30;
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, 2, 2);
+            });
+            ctx.globalAlpha = 1;
+
+            // Draw placement preview
+            if (placementMode && selectedTower && selectedTower !== 'upgrade') {
+                ctx.globalAlpha = 0.5;
+                const towerData = towerTypes[selectedTower];
+                ctx.fillStyle = towerData.color;
+                ctx.beginPath();
+                ctx.arc(mouseX, mouseY, 15, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        // Mouse position tracking
+        let mouseX = 0, mouseY = 0;
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+        });
+
+        // Update UI
+        function updateUI() {
+            document.getElementById('gold').textContent = gold;
+            document.getElementById('baseHP').textContent = baseHP;
+            document.getElementById('wave').textContent = wave;
+            document.getElementById('zombies').textContent = zombies.length;
+            updateTowerButtons();
+        }
+
+        // Game over
+        function gameOver() {
+            gameRunning = false;
+            alert(`💀 Game Over!\n\nBase Destroyed!\nWaves Survived: ${wave - 1}\n\nThe zombies have overrun your defenses!`);
+            // Reset game
+            baseHP = 100;
+            gold = 100;
+            wave = 1;
+            towers = [];
+            zombies = [];
+            bullets = [];
+            document.getElementById('startBtn').textContent = 'Start Wave 1';
+            document.getElementById('startBtn').disabled = false;
+            updateUI();
+        }
+
+        // Game loop
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start game loop
+        updateUI();
+        gameLoop();
+    </script>
+</body>
+</html>

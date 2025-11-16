@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Zombie Base Defense - Molly's Arcade</title>
+    <title>Dragon Defense - Molly's Arcade</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html {
@@ -12,7 +12,7 @@
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a0f0f 0%, #2d1414 50%, #1a0f0f 100%);
+            background: linear-gradient(135deg, #1a3a1a 0%, #2d5a2d 50%, #1a3a1a 100%);
             color: white;
             display: flex;
             flex-direction: column;
@@ -29,16 +29,16 @@
             text-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
         }
         .game-container {
-            background: rgba(45, 20, 20, 0.5);
+            background: rgba(45, 90, 45, 0.5);
             padding: 20px;
             border-radius: 15px;
-            border: 2px solid #ff4444;
-            box-shadow: 0 10px 30px rgba(255, 68, 68, 0.3);
+            border: 2px solid #ff8800;
+            box-shadow: 0 10px 30px rgba(255, 136, 0, 0.3);
             position: relative;
         }
         canvas {
-            border: 2px solid #8b0000;
-            background: linear-gradient(180deg, #2a1515 0%, #1a0a0a 100%);
+            border: 2px solid #cc6600;
+            background: linear-gradient(180deg, #88cc88 0%, #66aa66 100%);
             display: block;
             max-width: 100%;
             cursor: crosshair;
@@ -56,14 +56,14 @@
         }
         .stat {
             font-size: 1.2rem;
-            color: #ff4444;
-            background: rgba(139, 0, 0, 0.3);
+            color: #ffaa00;
+            background: rgba(139, 69, 0, 0.3);
             padding: 8px 15px;
             border-radius: 10px;
-            border: 1px solid #ff4444;
+            border: 1px solid #ff8800;
         }
         button {
-            background: linear-gradient(45deg, #ff4444, #cc0000);
+            background: linear-gradient(45deg, #ff8800, #cc6600);
             color: white;
             border: none;
             padding: 12px 30px;
@@ -73,7 +73,7 @@
             transition: all 0.3s ease;
             margin: 5px;
         }
-        button:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255, 68, 68, 0.5); }
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255, 136, 0, 0.5); }
         button:disabled {
             background: #666;
             cursor: not-allowed;
@@ -103,44 +103,104 @@
             flex-wrap: wrap;
         }
         .tower-btn {
-            background: rgba(139, 0, 0, 0.5);
-            border: 2px solid #ff4444;
+            background: rgba(139, 69, 0, 0.5);
+            border: 2px solid #ff8800;
             padding: 10px 20px;
             font-size: 0.9rem;
         }
         .tower-btn.selected {
-            background: rgba(255, 68, 68, 0.7);
+            background: rgba(255, 136, 0, 0.7);
             border-color: #ffaa00;
+        }
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .tutorial-box {
+            background: linear-gradient(135deg, #2d5a2d 0%, #1a3a1a 100%);
+            border: 3px solid #ff8800;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(255, 136, 0, 0.5);
+        }
+        .tutorial-box h2 {
+            color: #ff8800;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        .tutorial-box p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            color: #e0e0e0;
+        }
+        .tutorial-box ul {
+            text-align: left;
+            margin: 20px 0;
+            padding-left: 40px;
+        }
+        .tutorial-box li {
+            margin: 10px 0;
+            font-size: 1rem;
         }
         @media (max-width: 768px) {
             h1 { font-size: 2rem; }
             canvas { width: 100% !important; height: auto !important; }
+            .tutorial-box { padding: 20px; max-width: 90%; }
         }
     </style>
 </head>
 <body>
-    <h1>🧟 Zombie Base Defense</h1>
+    <div id="tutorial" class="tutorial-overlay">
+        <div class="tutorial-box">
+            <h2>🐉 Dragon Defense Tutorial</h2>
+            <p>Welcome, brave defender! Dragons are attacking your castle!</p>
+            <ul>
+                <li>🏹 <b>Archer Towers</b> (💰50) - Fast firing, good vs small dragons</li>
+                <li>💣 <b>Catapult</b> (💰100) - Slow but powerful, area damage</li>
+                <li>⚡ <b>Lightning Tower</b> (💰150) - Chain lightning, hits multiple dragons</li>
+                <li>⬆️ <b>Upgrade</b> (💰75) - Make your towers stronger!</li>
+            </ul>
+            <p><b>How to Play:</b><br>
+            Click on the GREEN grass to place towers<br>
+            Keep dragons away from your castle (red building)<br>
+            Earn gold by defeating dragons</p>
+            <button onclick="closeTutorial()" style="font-size: 1.2rem; padding: 15px 40px; margin-top: 20px;">Start Defending! 🛡️</button>
+        </div>
+    </div>
+
+    <h1>🐉 Dragon Defense</h1>
     <div class="game-container">
         <button class="exit-button" onclick="exitGame()">✕ Exit</button>
         <canvas id="gameCanvas" width="800" height="600"></canvas>
         <div class="controls">
             <div class="stats">
-                <div class="stat">💰 Gold: <span id="gold">100</span></div>
-                <div class="stat">❤️ Base HP: <span id="baseHP">100</span></div>
-                <div class="stat">🧟 Wave: <span id="wave">1</span></div>
-                <div class="stat">👹 Zombies: <span id="zombies">0</span></div>
+                <div class="stat">💰 Gold: <span id="gold">150</span></div>
+                <div class="stat">🏰 Castle HP: <span id="castleHP">100</span></div>
+                <div class="stat">🐉 Wave: <span id="wave">1</span></div>
+                <div class="stat">🔥 Dragons: <span id="dragons">0</span></div>
             </div>
             <button id="startBtn" onclick="startWave()">Start Wave 1</button>
         </div>
         <div class="tower-shop">
-            <button class="tower-btn" onclick="selectTower('gun')" id="gunBtn">🔫 Gun Tower (💰50)</button>
-            <button class="tower-btn" onclick="selectTower('cannon')" id="cannonBtn">💣 Cannon (💰100)</button>
-            <button class="tower-btn" onclick="selectTower('laser')" id="laserBtn">⚡ Laser (💰150)</button>
+            <button class="tower-btn" onclick="selectTower('archer')" id="archerBtn">🏹 Archer (💰50)</button>
+            <button class="tower-btn" onclick="selectTower('catapult')" id="catapultBtn">💣 Catapult (💰100)</button>
+            <button class="tower-btn" onclick="selectTower('lightning')" id="lightningBtn">⚡ Lightning (💰150)</button>
             <button class="tower-btn" onclick="selectTower('upgrade')" id="upgradeBtn">⬆️ Upgrade (💰75)</button>
         </div>
         <div class="instructions">
-            Click on the field to place towers • Defend your base from zombies!<br>
-            Earn gold from killing zombies • Upgrade towers for more power
+            Click on GREEN areas to place towers • Defend your castle from dragons!<br>
+            🏹 Fast | 💣 Area Damage | ⚡ Chain Lightning
         </div>
     </div>
 
@@ -148,33 +208,52 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
+        // Close tutorial
+        function closeTutorial() {
+            document.getElementById('tutorial').style.display = 'none';
+        }
+
         // Game state
         let gameRunning = false;
-        let gold = 100;
-        let baseHP = 100;
+        let gold = 150;
+        let castleHP = 100;
         let wave = 1;
         let selectedTower = null;
         let placementMode = false;
 
         // Arrays
         let towers = [];
-        let zombies = [];
+        let dragons = [];
         let bullets = [];
         let particles = [];
 
-        // Base position (right side)
-        const base = {
-            x: canvas.width - 60,
-            y: canvas.height / 2,
-            width: 50,
-            height: 100
+        // Path waypoints (winding path)
+        const path = [
+            {x: -30, y: 100},
+            {x: 150, y: 100},
+            {x: 150, y: 250},
+            {x: 300, y: 250},
+            {x: 300, y: 150},
+            {x: 450, y: 150},
+            {x: 450, y: 350},
+            {x: 600, y: 350},
+            {x: 600, y: 450},
+            {x: 750, y: 450}
+        ];
+
+        // Castle position (end of path)
+        const castle = {
+            x: 720,
+            y: 420,
+            width: 70,
+            height: 80
         };
 
         // Tower types
         const towerTypes = {
-            gun: { cost: 50, damage: 10, range: 150, fireRate: 30, color: '#6bb6ff', name: 'Gun' },
-            cannon: { cost: 100, damage: 30, range: 120, fireRate: 60, color: '#ff8800', name: 'Cannon' },
-            laser: { cost: 150, damage: 5, range: 200, fireRate: 5, color: '#00ff88', name: 'Laser' }
+            archer: { cost: 50, damage: 8, range: 120, fireRate: 25, color: '#8b4513', name: 'Archer', projectileColor: '#654321' },
+            catapult: { cost: 100, damage: 25, range: 140, fireRate: 70, color: '#666666', name: 'Catapult', projectileColor: '#333333', splash: 40 },
+            lightning: { cost: 150, damage: 12, range: 180, fireRate: 40, color: '#00aaff', name: 'Lightning', projectileColor: '#00ffff', chain: 2 }
         };
 
         // Exit game
@@ -202,20 +281,62 @@
 
         // Update tower button states
         function updateTowerButtons() {
-            document.getElementById('gunBtn').classList.remove('selected');
-            document.getElementById('cannonBtn').classList.remove('selected');
-            document.getElementById('laserBtn').classList.remove('selected');
+            document.getElementById('archerBtn').classList.remove('selected');
+            document.getElementById('catapultBtn').classList.remove('selected');
+            document.getElementById('lightningBtn').classList.remove('selected');
             document.getElementById('upgradeBtn').classList.remove('selected');
 
-            if (selectedTower === 'gun') document.getElementById('gunBtn').classList.add('selected');
-            if (selectedTower === 'cannon') document.getElementById('cannonBtn').classList.add('selected');
-            if (selectedTower === 'laser') document.getElementById('laserBtn').classList.add('selected');
+            if (selectedTower === 'archer') document.getElementById('archerBtn').classList.add('selected');
+            if (selectedTower === 'catapult') document.getElementById('catapultBtn').classList.add('selected');
+            if (selectedTower === 'lightning') document.getElementById('lightningBtn').classList.add('selected');
             if (selectedTower === 'upgrade') document.getElementById('upgradeBtn').classList.add('selected');
 
-            // Enable/disable based on gold
-            document.getElementById('gunBtn').disabled = gold < 50;
-            document.getElementById('cannonBtn').disabled = gold < 100;
-            document.getElementById('laserBtn').disabled = gold < 150;
+            document.getElementById('archerBtn').disabled = gold < 50;
+            document.getElementById('catapultBtn').disabled = gold < 100;
+            document.getElementById('lightningBtn').disabled = gold < 150;
+        }
+
+        // Check if point is on grass (not on path)
+        function isOnGrass(x, y) {
+            // Check distance from path
+            for (let i = 0; i < path.length - 1; i++) {
+                const p1 = path[i];
+                const p2 = path[i + 1];
+                const dist = distanceToLineSegment(x, y, p1.x, p1.y, p2.x, p2.y);
+                if (dist < 50) return false; // Too close to path
+            }
+            // Check not on castle
+            if (x > castle.x - 30 && x < castle.x + castle.width + 30 &&
+                y > castle.y - 30 && y < castle.y + castle.height + 30) {
+                return false;
+            }
+            return true;
+        }
+
+        // Distance from point to line segment
+        function distanceToLineSegment(px, py, x1, y1, x2, y2) {
+            const A = px - x1;
+            const B = py - y1;
+            const C = x2 - x1;
+            const D = y2 - y1;
+            const dot = A * C + B * D;
+            const lenSq = C * C + D * D;
+            let param = -1;
+            if (lenSq !== 0) param = dot / lenSq;
+            let xx, yy;
+            if (param < 0) {
+                xx = x1;
+                yy = y1;
+            } else if (param > 1) {
+                xx = x2;
+                yy = y2;
+            } else {
+                xx = x1 + param * C;
+                yy = y1 + param * D;
+            }
+            const dx = px - xx;
+            const dy = py - yy;
+            return Math.sqrt(dx * dx + dy * dy);
         }
 
         // Canvas click handler
@@ -226,20 +347,18 @@
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
 
-            // Check if click is in valid placement area (left 2/3 of screen)
-            if (x > canvas.width * 0.7) {
-                return;
+            if (!isOnGrass(x, y)) {
+                return; // Can only place on grass
             }
 
             if (selectedTower === 'upgrade') {
-                // Find tower to upgrade
                 for (let tower of towers) {
                     const dist = Math.hypot(tower.x - x, tower.y - y);
                     if (dist < 20 && gold >= 75) {
                         gold -= 75;
                         tower.level++;
-                        tower.damage *= 1.5;
-                        tower.range *= 1.1;
+                        tower.damage = Math.floor(tower.damage * 1.5);
+                        tower.range = Math.floor(tower.range * 1.1);
                         updateUI();
                         createParticles(tower.x, tower.y, '#ffaa00', 10);
                         break;
@@ -251,10 +370,8 @@
                 return;
             }
 
-            // Place new tower
             const towerData = towerTypes[selectedTower];
             if (gold >= towerData.cost) {
-                // Check if not overlapping with other towers
                 let canPlace = true;
                 for (let tower of towers) {
                     const dist = Math.hypot(tower.x - x, tower.y - y);
@@ -275,7 +392,9 @@
                         fireTimer: 0,
                         color: towerData.color,
                         level: 1,
-                        target: null
+                        target: null,
+                        splash: towerData.splash || 0,
+                        chain: towerData.chain || 0
                     });
                     gold -= towerData.cost;
                     updateUI();
@@ -297,31 +416,31 @@
             spawnWave();
         }
 
-        // Spawn zombies
+        // Spawn dragons following the path
         function spawnWave() {
-            const zombieCount = 5 + wave * 3;
+            const dragonCount = 5 + wave * 2;
             let spawned = 0;
 
             const spawnInterval = setInterval(() => {
-                if (spawned >= zombieCount) {
+                if (spawned >= dragonCount) {
                     clearInterval(spawnInterval);
                     return;
                 }
 
-                // Random y position
-                const y = Math.random() * (canvas.height - 40) + 20;
-                zombies.push({
-                    x: -30,
-                    y: y,
-                    width: 25,
-                    height: 35,
-                    hp: 20 + wave * 10,
-                    maxHP: 20 + wave * 10,
-                    speed: 0.5 + wave * 0.1,
-                    gold: 10 + wave * 2
+                dragons.push({
+                    x: path[0].x,
+                    y: path[0].y,
+                    width: 30,
+                    height: 25,
+                    hp: 30 + wave * 15,
+                    maxHP: 30 + wave * 15,
+                    speed: 0.3 + wave * 0.05, // Slower dragons
+                    gold: 15 + wave * 3,
+                    pathIndex: 0,
+                    color: wave % 3 === 0 ? '#ff0000' : wave % 3 === 1 ? '#0088ff' : '#00ff00'
                 });
                 spawned++;
-            }, 1000);
+            }, 1500);
         }
 
         // Create particle effects
@@ -340,16 +459,27 @@
 
         // Update game
         function update() {
-            // Update zombies
-            zombies.forEach((zombie, zIndex) => {
-                zombie.x += zombie.speed;
+            // Update dragons - follow path
+            dragons.forEach((dragon, dIndex) => {
+                if (dragon.pathIndex < path.length - 1) {
+                    const target = path[dragon.pathIndex + 1];
+                    const dx = target.x - dragon.x;
+                    const dy = target.y - dragon.y;
+                    const dist = Math.hypot(dx, dy);
 
-                // Check if reached base
-                if (zombie.x + zombie.width >= base.x) {
-                    baseHP -= 10;
-                    zombies.splice(zIndex, 1);
+                    if (dist < 5) {
+                        dragon.pathIndex++;
+                    } else {
+                        dragon.x += (dx / dist) * dragon.speed;
+                        dragon.y += (dy / dist) * dragon.speed;
+                    }
+                } else {
+                    // Reached castle
+                    castleHP -= 15;
+                    dragons.splice(dIndex, 1);
+                    createParticles(castle.x + castle.width/2, castle.y + castle.height/2, '#ff0000', 15);
                     updateUI();
-                    if (baseHP <= 0) {
+                    if (castleHP <= 0) {
                         gameOver();
                     }
                 }
@@ -359,59 +489,65 @@
             towers.forEach(tower => {
                 tower.fireTimer++;
 
-                // Find nearest zombie in range
                 tower.target = null;
                 let nearestDist = tower.range;
 
-                zombies.forEach(zombie => {
-                    const dist = Math.hypot(zombie.x - tower.x, zombie.y - tower.y);
+                dragons.forEach(dragon => {
+                    const dist = Math.hypot(dragon.x - tower.x, dragon.y - tower.y);
                     if (dist < nearestDist) {
                         nearestDist = dist;
-                        tower.target = zombie;
+                        tower.target = dragon;
                     }
                 });
 
-                // Fire at target
                 if (tower.target && tower.fireTimer >= tower.fireRate) {
                     tower.fireTimer = 0;
-                    const angle = Math.atan2(tower.target.y - tower.y, tower.target.x - tower.x);
+                    const towerData = towerTypes[tower.type];
                     bullets.push({
                         x: tower.x,
                         y: tower.y,
-                        vx: Math.cos(angle) * 6,
-                        vy: Math.sin(angle) * 6,
+                        targetX: tower.target.x,
+                        targetY: tower.target.y,
                         damage: tower.damage,
-                        color: tower.color,
-                        type: tower.type
+                        color: towerData.projectileColor,
+                        type: tower.type,
+                        splash: tower.splash,
+                        chain: tower.chain,
+                        speed: 5
                     });
                 }
             });
 
             // Update bullets
             bullets = bullets.filter(bullet => {
-                bullet.x += bullet.vx;
-                bullet.y += bullet.vy;
+                const dx = bullet.targetX - bullet.x;
+                const dy = bullet.targetY - bullet.y;
+                const dist = Math.hypot(dx, dy);
 
-                // Check collision with zombies
-                for (let i = zombies.length - 1; i >= 0; i--) {
-                    const zombie = zombies[i];
-                    if (bullet.x > zombie.x && bullet.x < zombie.x + zombie.width &&
-                        bullet.y > zombie.y && bullet.y < zombie.y + zombie.height) {
+                if (dist < bullet.speed) {
+                    // Hit!
+                    for (let i = dragons.length - 1; i >= 0; i--) {
+                        const dragon = dragons[i];
+                        const hitDist = Math.hypot(dragon.x - bullet.targetX, dragon.y - bullet.targetY);
 
-                        zombie.hp -= bullet.damage;
-                        createParticles(bullet.x, bullet.y, '#ff0000', 3);
+                        if (hitDist < 30 + bullet.splash) {
+                            dragon.hp -= bullet.damage;
+                            createParticles(dragon.x, dragon.y, '#ff6600', 5);
 
-                        if (zombie.hp <= 0) {
-                            gold += zombie.gold;
-                            zombies.splice(i, 1);
-                            createParticles(zombie.x + zombie.width/2, zombie.y + zombie.height/2, '#00ff00', 8);
-                            updateUI();
+                            if (dragon.hp <= 0) {
+                                gold += dragon.gold;
+                                dragons.splice(i, 1);
+                                createParticles(dragon.x, dragon.y, '#ffaa00', 12);
+                                updateUI();
+                            }
                         }
-                        return false;
                     }
+                    return false;
                 }
 
-                return bullet.x > 0 && bullet.x < canvas.width && bullet.y > 0 && bullet.y < canvas.height;
+                bullet.x += (dx / dist) * bullet.speed;
+                bullet.y += (dy / dist) * bullet.speed;
+                return true;
             });
 
             // Update particles
@@ -422,8 +558,8 @@
                 return p.life > 0;
             });
 
-            // Check if wave complete
-            if (gameRunning && zombies.length === 0) {
+            // Check wave complete
+            if (gameRunning && dragons.length === 0) {
                 setTimeout(() => {
                     wave++;
                     gameRunning = false;
@@ -438,32 +574,69 @@
 
         // Draw game
         function draw() {
-            // Clear canvas
-            ctx.fillStyle = '#1a0a0a';
+            // Draw grass background
+            ctx.fillStyle = '#66aa66';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Draw path
-            ctx.fillStyle = '#2a1515';
-            ctx.fillRect(0, 0, canvas.width - 100, canvas.height);
+            ctx.strokeStyle = '#d4a574';
+            ctx.lineWidth = 80;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(path[0].x, path[0].y);
+            for (let i = 1; i < path.length; i++) {
+                ctx.lineTo(path[i].x, path[i].y);
+            }
+            ctx.stroke();
 
-            // Draw base
-            ctx.fillStyle = '#4a4a4a';
-            ctx.fillRect(base.x, base.y, base.width, base.height);
+            // Draw path border
+            ctx.strokeStyle = '#8b6914';
+            ctx.lineWidth = 84;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(path[0].x, path[0].y);
+            for (let i = 1; i < path.length; i++) {
+                ctx.lineTo(path[i].x, path[i].y);
+            }
+            ctx.stroke();
+
+            // Re-draw path
+            ctx.strokeStyle = '#d4a574';
+            ctx.lineWidth = 80;
+            ctx.beginPath();
+            ctx.moveTo(path[0].x, path[0].y);
+            for (let i = 1; i < path.length; i++) {
+                ctx.lineTo(path[i].x, path[i].y);
+            }
+            ctx.stroke();
+
+            // Draw castle
+            ctx.fillStyle = '#8b0000';
+            ctx.fillRect(castle.x, castle.y, castle.width, castle.height);
+            ctx.fillStyle = '#aa0000';
+            ctx.fillRect(castle.x + 5, castle.y + 5, castle.width - 10, 15);
+            // Castle tower
+            ctx.fillStyle = '#6b0000';
+            ctx.fillRect(castle.x + castle.width/2 - 10, castle.y - 20, 20, 25);
             ctx.fillStyle = '#ff4444';
-            ctx.fillRect(base.x + 5, base.y + 5, base.width - 10, 10);
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 12px Arial';
+            ctx.font = 'bold 14px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText('BASE', base.x + base.width/2, base.y + base.height/2);
+            ctx.fillText('🏰', castle.x + castle.width/2, castle.y + castle.height/2 + 5);
 
             // Draw towers
             towers.forEach(tower => {
                 // Range circle
-                ctx.strokeStyle = tower.color + '22';
-                ctx.lineWidth = 1;
+                ctx.strokeStyle = tower.color + '33';
+                ctx.lineWidth = 2;
                 ctx.beginPath();
                 ctx.arc(tower.x, tower.y, tower.range, 0, Math.PI * 2);
                 ctx.stroke();
+
+                // Tower base
+                ctx.fillStyle = '#654321';
+                ctx.fillRect(tower.x - 12, tower.y - 5, 24, 10);
 
                 // Tower body
                 ctx.fillStyle = tower.color;
@@ -471,53 +644,71 @@
                 ctx.arc(tower.x, tower.y, 15, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Tower level indicator
+                // Level
                 ctx.fillStyle = '#ffffff';
                 ctx.font = 'bold 10px Arial';
                 ctx.textAlign = 'center';
                 ctx.fillText(tower.level, tower.x, tower.y + 4);
 
-                // Aim at target
+                // Aim line
                 if (tower.target) {
-                    ctx.strokeStyle = tower.color;
+                    ctx.strokeStyle = tower.color + '88';
                     ctx.lineWidth = 2;
                     ctx.beginPath();
                     ctx.moveTo(tower.x, tower.y);
-                    ctx.lineTo(tower.target.x + tower.target.width/2, tower.target.y + tower.target.height/2);
+                    ctx.lineTo(tower.target.x, tower.target.y);
                     ctx.stroke();
                 }
             });
 
-            // Draw zombies
-            zombies.forEach(zombie => {
-                // Zombie body (green)
-                ctx.fillStyle = '#44aa44';
-                ctx.fillRect(zombie.x, zombie.y, zombie.width, zombie.height);
+            // Draw dragons
+            dragons.forEach(dragon => {
+                // Dragon body
+                ctx.fillStyle = dragon.color;
+                ctx.beginPath();
+                ctx.ellipse(dragon.x, dragon.y, dragon.width/2, dragon.height/2, 0, 0, Math.PI * 2);
+                ctx.fill();
 
-                // Zombie face
-                ctx.fillStyle = '#88cc88';
-                ctx.fillRect(zombie.x + 5, zombie.y + 5, zombie.width - 10, 15);
+                // Dragon wings
+                ctx.fillStyle = dragon.color + 'aa';
+                ctx.beginPath();
+                ctx.moveTo(dragon.x - 10, dragon.y);
+                ctx.lineTo(dragon.x - 20, dragon.y - 10);
+                ctx.lineTo(dragon.x - 10, dragon.y - 5);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(dragon.x + 10, dragon.y);
+                ctx.lineTo(dragon.x + 20, dragon.y - 10);
+                ctx.lineTo(dragon.x + 10, dragon.y - 5);
+                ctx.fill();
+
+                // Dragon head
+                ctx.fillStyle = dragon.color;
+                ctx.beginPath();
+                ctx.arc(dragon.x + 12, dragon.y, 8, 0, Math.PI * 2);
+                ctx.fill();
 
                 // Eyes
-                ctx.fillStyle = '#ff0000';
-                ctx.fillRect(zombie.x + 7, zombie.y + 8, 3, 3);
-                ctx.fillRect(zombie.x + zombie.width - 10, zombie.y + 8, 3, 3);
+                ctx.fillStyle = '#ffff00';
+                ctx.beginPath();
+                ctx.arc(dragon.x + 14, dragon.y - 2, 2, 0, Math.PI * 2);
+                ctx.fill();
 
                 // HP bar
-                const hpPercent = zombie.hp / zombie.maxHP;
-                ctx.fillStyle = '#ff0000';
-                ctx.fillRect(zombie.x, zombie.y - 8, zombie.width, 4);
-                ctx.fillStyle = '#00ff00';
-                ctx.fillRect(zombie.x, zombie.y - 8, zombie.width * hpPercent, 4);
+                const hpPercent = dragon.hp / dragon.maxHP;
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(dragon.x - 15, dragon.y - 20, 30, 5);
+                ctx.fillStyle = hpPercent > 0.5 ? '#00ff00' : hpPercent > 0.25 ? '#ffaa00' : '#ff0000';
+                ctx.fillRect(dragon.x - 15, dragon.y - 20, 30 * hpPercent, 5);
             });
 
             // Draw bullets
             bullets.forEach(bullet => {
                 ctx.fillStyle = bullet.color;
-                ctx.shadowBlur = 5;
+                ctx.shadowBlur = 8;
                 ctx.shadowColor = bullet.color;
                 ctx.beginPath();
-                ctx.arc(bullet.x, bullet.y, 3, 0, Math.PI * 2);
+                ctx.arc(bullet.x, bullet.y, 4, 0, Math.PI * 2);
                 ctx.fill();
             });
             ctx.shadowBlur = 0;
@@ -526,23 +717,29 @@
             particles.forEach(p => {
                 ctx.globalAlpha = p.life / 30;
                 ctx.fillStyle = p.color;
-                ctx.fillRect(p.x, p.y, 2, 2);
+                ctx.fillRect(p.x, p.y, 3, 3);
             });
             ctx.globalAlpha = 1;
 
             // Draw placement preview
             if (placementMode && selectedTower && selectedTower !== 'upgrade') {
-                ctx.globalAlpha = 0.5;
                 const towerData = towerTypes[selectedTower];
-                ctx.fillStyle = towerData.color;
+                const onGrass = isOnGrass(mouseX, mouseY);
+                ctx.globalAlpha = 0.6;
+                ctx.fillStyle = onGrass ? towerData.color : '#ff0000';
                 ctx.beginPath();
                 ctx.arc(mouseX, mouseY, 15, 0, Math.PI * 2);
                 ctx.fill();
+                ctx.strokeStyle = onGrass ? towerData.color : '#ff0000';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(mouseX, mouseY, towerData.range, 0, Math.PI * 2);
+                ctx.stroke();
                 ctx.globalAlpha = 1;
             }
         }
 
-        // Mouse position tracking
+        // Mouse position
         let mouseX = 0, mouseY = 0;
         canvas.addEventListener('mousemove', (e) => {
             const rect = canvas.getBoundingClientRect();
@@ -553,22 +750,21 @@
         // Update UI
         function updateUI() {
             document.getElementById('gold').textContent = gold;
-            document.getElementById('baseHP').textContent = baseHP;
+            document.getElementById('castleHP').textContent = castleHP;
             document.getElementById('wave').textContent = wave;
-            document.getElementById('zombies').textContent = zombies.length;
+            document.getElementById('dragons').textContent = dragons.length;
             updateTowerButtons();
         }
 
         // Game over
         function gameOver() {
             gameRunning = false;
-            alert(`💀 Game Over!\n\nBase Destroyed!\nWaves Survived: ${wave - 1}\n\nThe zombies have overrun your defenses!`);
-            // Reset game
-            baseHP = 100;
-            gold = 100;
+            alert(`🔥 Game Over!\n\nCastle Destroyed!\nWaves Survived: ${wave - 1}\n\nThe dragons have conquered your kingdom!`);
+            castleHP = 100;
+            gold = 150;
             wave = 1;
             towers = [];
-            zombies = [];
+            dragons = [];
             bullets = [];
             document.getElementById('startBtn').textContent = 'Start Wave 1';
             document.getElementById('startBtn').disabled = false;
@@ -582,7 +778,6 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // Start game loop
         updateUI();
         gameLoop();
     </script>

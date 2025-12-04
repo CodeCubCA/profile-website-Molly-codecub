@@ -16,8 +16,13 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
+        body::-webkit-scrollbar { width: 12px; }
+        body::-webkit-scrollbar-track { background: #0d1b2a; border-left: 1px solid rgba(107, 182, 255, 0.2); }
+        body::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #6bb6ff 0%, #4a90e2 100%); border-radius: 10px; }
+        body::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%); box-shadow: 0 0 10px rgba(107, 182, 255, 0.5); }
         h1 {
             font-size: 2.5rem;
             margin-bottom: 1rem;

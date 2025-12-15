@@ -1316,6 +1316,42 @@ section {
     box-shadow: 0 8px 20px rgba(236, 72, 153, 0.5);
 }
 
+/* AI Image Generator Styles */
+.image-gen-gradient {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%) !important;
+}
+
+.image-gen h3 {
+    background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: none !important;
+}
+
+.tech-badge.image-gen {
+    background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+    color: white;
+    border-color: #8b5cf6;
+    box-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+}
+
+.image-gen-demo-btn {
+    background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+    color: white;
+    border-color: #8b5cf6;
+    flex: 1;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.image-gen-demo-btn:hover {
+    background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.5);
+}
+
 .project-buttons {
     display: flex;
     gap: 1rem;
